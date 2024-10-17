@@ -5,6 +5,7 @@ Completed Red Black Tree visualization
   - Visual
   - functional Red Black Tree
     - BST
+      - Big 5
       - Insert Node
         - Tree Traversal
           - Linked List with left and right nodes
