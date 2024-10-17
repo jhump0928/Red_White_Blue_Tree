@@ -1,6 +1,5 @@
 # Red_White_Blue_Tree
 RBT Group Project CSI 3334
-//add categories
 Things To Do 
 Completed Red Black Tree visualization
   - Visual
