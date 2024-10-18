@@ -1,5 +1,12 @@
 # Red_White_Blue_Tree
 RBT Group Project CSI 3334
+
+Red-Black Tree Rules:
+  1) every node is either red or black
+	2) the root is black
+	3) if a node is red its children must be black
+  4) every path from a node to a null pointer must contain the same number of black nodes!
+
 Things To Do 
 Completed Red Black Tree visualization
   - Visual
