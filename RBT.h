@@ -29,6 +29,10 @@ private:
     void rotateL(){}
     void rotateR(){}
     
+    //double rotates
+    void doubleRotateWithLeft(){}
+    void doubleRotateWithRight(){}
+    
     //rebalance colors
     void rebalance(){}
     
@@ -41,7 +45,9 @@ public:
     RBT():root(nullptr){}
     ~RBT(){ root = nullptr; }
     
-    T& find(
+    void insert(T& val){}
+    void remove(T& val){}
+    Node<T>& find(T& val){}
 };
 
 #endif /* RBT_h */
