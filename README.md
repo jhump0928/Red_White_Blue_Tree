@@ -8,7 +8,7 @@ Red-Black Tree Rules:
   4) every path from a node to a null pointer must contain the same number of black nodes!
 
 SDL Plotter Rules:
-Screen Size 1400x700 (cols x rows)
+  1) Screen Size 1400x700 (cols x rows)
 
 Things To Do 
 Completed Red Black Tree visualization
