@@ -1,0 +1,113 @@
+//
+//  main.cpp
+//  3334 Group Project
+//
+//  Created by Mac Johnson on 10/22/24.
+//
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include "SDL_Plotter.h"
+#include "Font.h"
+#include "Display.h"
+
+const int SCREEN_WIDTH = 1200;
+const int SCREEN_HEIGHT = 700;
+
+struct Node{
+    int data;
+    char color;
+    bool isLeftChild;
+    bool isRightChild;
+    Node* parent;
+    Node* left;
+    Node* right;
+    int height=0; //or height can be calculated. easy fix
+    
+    Node(const int& d, Node* l, Node* r, Node* p): data(d), left(l),
+        right(r), parent(p) {}   // test node constructor.
+};
+
+int main() {
+    // declare plotter
+    SDL_Plotter g(SCREEN_HEIGHT, SCREEN_WIDTH);
+    
+    // Font intstance. Creates file stream, loads font from Font.txt file.
+    ifstream fontInput;
+    font main(2, {255, 255, 255});
+    
+    fontInput.open("Font.txt");
+    main.loadFont(fontInput);
+    fontInput.close();
+    
+    // Vector of tree nodes. Once the tree is working, push all nodes to the vector in level-order.
+    vector<Node> leaves;
+    
+    // TEST NODES. Remove when working tree is implemented
+    Node n(10, nullptr, nullptr, nullptr);
+    
+    Node n1(12, nullptr, nullptr, nullptr);
+    Node n2(20, nullptr, nullptr, nullptr);
+    
+    Node n3(30, nullptr, nullptr, nullptr);
+    Node n4(40, nullptr, nullptr, nullptr);
+    Node n5(50, nullptr, nullptr, nullptr);
+    Node n6(77, nullptr, nullptr, nullptr);
+    
+    Node n7(70, nullptr, nullptr, nullptr);
+    
+    n1.height = 1;
+    n2.height = 1;
+    
+    n3.height = 2;
+    n4.height = 2;
+    n5.height = 2;
+    n6.height = 2;
+    
+    n7.height = 3;
+    
+    leaves.push_back(n);
+    
+    leaves.push_back(n1);
+    leaves.push_back(n2);
+    
+    leaves.push_back(n3);
+    leaves.push_back(n4);
+    leaves.push_back(n5);
+    leaves.push_back(n6);
+    
+    leaves.push_back(n7);
+    
+    
+    while (!g.getQuit()) {
+        
+        // This loop draws all nodes onto the screen.
+        for (unsigned int i = 0; i < leaves.size(); i++) {
+            point p;
+            int offset = 0;
+            int count = 0; // number of nodes with same height behind current node
+            
+            for (int j = 1; j <= i; j++) {
+                if (leaves[i - j].height == leaves[i].height) {
+                    count++;
+                }
+            }
+            
+            if (count > 0) {
+                offset = 2 * count * SCREEN_WIDTH / (pow(2, leaves[i].height + 1));
+            }
+            
+            p.x = (SCREEN_WIDTH / (pow(2, leaves[i].height + 1))) + offset;
+            p.y = (leaves[i].height * 125) + 50;
+            
+            drawNode(g, to_string(leaves[i].data), 25, p, main);
+        }
+                
+        
+        g.update();
+    }
+
+    return 0;
+}
