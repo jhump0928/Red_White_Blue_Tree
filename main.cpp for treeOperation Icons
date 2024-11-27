@@ -1,0 +1,165 @@
+#include <iostream>
+#include <SDL.h>
+#include "SDL_Plotter.h"
+#include "treeOperation.h"
+#include <fstream>
+#include <cassert>
+#include <stack>
+
+int main(int argc, char* argv[]) {
+    //SDL Plotter Instance
+    SDL_Plotter g(700,1400);
+
+    //1. This block has to do with the treeOperation icons
+    //1a: treeOperation Instances
+    treeOperation insertOperationIcon;
+    treeOperation deleteOperationIcon;
+    treeOperation findOperationIcon;
+
+    //1b: Font to go on the treeOperations
+    font iconFont(1,{255,255,255});
+    ifstream fontStream;
+    fontStream.open("Font.txt");
+    assert(fontStream.is_open());
+    iconFont.loadFont(fontStream);
+    fontStream.close();
+
+    //1c: Points for where the upper left pixel of each icon is displayed
+
+
+    //2. This block has to do with handling user input
+    //2a. variables to handle user input
+    bool enterPressed = false;
+    bool readMode = false;
+    string inputNumber;
+    int finalNumber;
+    char lastOperation;
+
+
+    //Master Control Loop
+    while(!g.getQuit()){
+
+        //Displaying treeOperation Icons
+        if(!readMode) {
+            insertOperationIcon.display(g, "insert", iconFont);
+            deleteOperationIcon.display(g, "delete", iconFont);
+            findOperationIcon.display(g, "find", iconFont);
+        }
+
+
+        //This if statement handles all kb hits, and calls a certain function based off what key was hit
+        if(g.kbhit()) {
+            char c = tolower(g.getKey()); //this is the key you read in
+
+            //These 3 if statements change the specified displayed icon to "read" mode
+            if (c == 'i') {
+                insertOperationIcon.display(g, "insertRead", iconFont);
+                lastOperation = 'i';
+                readMode = true;
+                g.update();
+            }
+            else if (c == 'r') {
+                insertOperationIcon.display(g, "deleteRead", iconFont);
+                lastOperation = 'r';
+                readMode = true;
+                g.update();
+            }
+            else if (c == 'f') {
+                insertOperationIcon.display(g, "findRead", iconFont);
+                lastOperation = 'f';
+                readMode = true;
+                g.update();
+            }
+
+            else if(c>=48 and c<=57){ //if within 0-9, ASCII
+                if(readMode) {
+                    if (inputNumber.size() < 2) {
+                        inputNumber.push_back(c);
+                        if(lastOperation=='i'){
+                            for(int i=0;i<inputNumber.size();i++){
+                                writeNumber(g,insertOperationIconPoint,inputNumber[i]-48,10+(i*12),iconFont);
+                            }
+                        }
+                        else if(lastOperation=='r'){
+                            for(int i=0;i<inputNumber.size();i++){
+                                writeNumber(g,deleteOperationIconPoint,inputNumber[i]-48,10+(i*12),iconFont);
+                            }
+                        }
+                        else if(lastOperation=='f'){
+                            for(int i=0;i<inputNumber.size();i++){
+                                writeNumber(g,findOperationIconPoint,inputNumber[i]-48,10+(i*12),iconFont);
+                            }
+                        }
+                    }
+                }
+            }
+            else if(c=='x'){ //if backspace
+                if(readMode) {
+                    if (!inputNumber.empty()) {
+                        inputNumber.pop_back();
+
+                        int emptySpaces = 2-inputNumber.size();
+
+                        if(lastOperation=='i'){
+                            for(int i=0;i<inputNumber.size();i++){
+                                writeNumber(g,insertOperationIconPoint,inputNumber[i]-48,10+(i*12),iconFont);
+                            }
+
+                            for(int i=0;i<emptySpaces;i++){
+                                drawRectangle(g,point(insertOperationIconPoint.x+36-12*emptySpaces,
+                                                      insertOperationIconPoint.y),
+                                                      15,30);
+                            }
+                        }
+                        else if(lastOperation=='r'){
+                            for(int i=0;i<inputNumber.size();i++){
+                                writeNumber(g,deleteOperationIconPoint,inputNumber[i]-48,10+(i*12),iconFont);
+                            }
+
+                            for(int i=0;i<emptySpaces;i++){
+                                drawRectangle(g,point(deleteOperationIconPoint.x+36-12*emptySpaces,
+                                                      deleteOperationIconPoint.y),
+                                              15,30);
+                            }
+                        }
+                        else if(lastOperation=='f'){
+                            for(int i=0;i<inputNumber.size();i++){
+                                writeNumber(g,findOperationIconPoint,inputNumber[i]-48,10+(i*12),iconFont);
+                            }
+
+                            for(int i=0;i<emptySpaces;i++){
+                                drawRectangle(g,point(findOperationIconPoint.x+36-12*emptySpaces,
+                                                      findOperationIconPoint.y),
+                                              15,30);
+                            }
+                        }
+                    }
+                }
+            }
+            else if(c=='c'){// if c (for confirm) is pressed
+                if(readMode) {
+
+                    //NOTE: Final Number is what you place into your actual tree.
+                    //This is the number that you will call .insert(finalNumber) with
+                    if(!inputNumber.empty()) {
+                        finalNumber = stringToInt(inputNumber); //only do this if inputNumber is not empty
+                    }
+
+                    inputNumber.clear(); //clears inputNumber string
+                    readMode = false;
+
+                }
+            }
+
+        }
+
+        g.update();
+    }
+
+
+
+
+
+
+    return 0;
+}
