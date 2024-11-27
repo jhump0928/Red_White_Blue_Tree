@@ -1,0 +1,195 @@
+//
+// Created by jhump on 11/25/2024.
+//
+
+#ifndef RED_BLACK_TREE_RBT_H
+#define RED_BLACK_TREE_RBT_H
+
+#include <string>
+
+using namespace std;
+
+struct node{
+    int data;
+    char color;
+    bool isLeftChild;
+    bool isRightChild;
+    node* parent;
+    node* left;
+    node* right;
+
+    //Default Constructor = all false/nullptr, and data=0
+    node(){
+        data = 0;
+        color = 'b';
+        isLeftChild = false;
+        isRightChild = false;
+        parent = nullptr;
+        left = nullptr;
+        right = nullptr;
+    }
+
+
+    //NOTE: Null Nodes at end are represented with data = -1
+    node(int data, char color = 'b', node* parent = nullptr, node* left = nullptr,
+         node* right = nullptr, bool isLeftChild = false, bool isRightChild = false)
+         {
+
+            this->data = data;
+            this->color = color;
+            this->parent = parent;
+            this->left = left;
+            this->right = right;
+            this->isLeftChild = isLeftChild;
+            this->isRightChild = isRightChild;
+
+        }
+};
+
+class RBT{
+private:
+    node* root;
+    int size;
+
+    void rotateLeft(node* n){
+        if(n->parent!=root) {
+            if (n->isLeftChild) {
+                n->parent->left = n->right;
+            } else { //n is a right child
+                n->parent->right = n->right;
+            }
+        }
+        node* temp = n->right;
+        n->right = n->right->left;
+        temp->left = n;
+    }
+
+    void rotateRight(node* n){
+        if(n->parent!=root) {
+            if (n->isLeftChild) {
+                n->parent->left = n->left;
+            } else {
+                n->parent->right = n->left;
+            }
+        }
+        node* temp = n->left;
+        n->left = n->left->right;
+        temp->right = n;
+    }
+
+
+    void recolor(){
+
+    }
+    
+
+public:
+    
+    RBT(){
+        //Root points to a node with value val
+        root = nullptr;
+        size=0;
+    }
+    
+    RBT(int val){
+
+        //Root points to a node with value val
+        root = new node(val);
+
+        //The root node's left and right ptrs point to null nodes
+        root->left = new node(-1);
+        root->left->parent = root;
+
+        root->right = new node(-1);
+        root->right->parent = root;
+
+        size=1;
+    }
+
+
+    //destructor
+    ~RBT(){
+        //Traverse and delete
+    }
+
+    void insert(int val){
+        if(val<0) {
+            throw string("Error: Negative Node Value");
+        }
+        if(val > 99){
+            throw string("Error: Value Too Large");
+        }
+
+        if(root==nullptr){
+            //Root points to a node with value val
+            root = new node(val);
+
+            //The root node's left and right ptrs point to null nodes
+            root->left = new node(-1);
+            root->left->parent = root;
+
+            root->right = new node(-1);
+            root->right->parent = root;
+        }
+        else{
+            //node* newNode = new node(val);
+            node *temp = root; //temp is used to find correct insertion point
+
+            while (temp->data != -1) {
+                if (val < temp->data) {
+                    temp = temp->left;
+                } else {
+                    temp = temp->right;
+                }
+            }
+
+            //Now, the temp ptr is pointing to the location where
+            //node needs to be inserted.
+
+            //assigning what WAS a null node with a value now, and adjusting its properties
+            //Adjusting Data
+            temp->data = val;
+
+            //Adjusting isLeftChild and isRightChild
+            if (temp->parent->left == temp) {
+                temp->isLeftChild = true;
+                temp->isRightChild = false;
+            } else {
+                temp->isLeftChild = false;
+                temp->isRightChild = true;
+            }
+
+            //No need to adjust temp's parent because every time a null node is created, it points back to its parent
+
+            //Adjusting left and right:
+            //pointing left and right ptrs to null nodes
+            temp->left = new node(-1);
+            temp->left->parent = temp;
+
+            temp->right = new node(-1);
+            temp->right->parent = temp;
+
+            //Adjusting Color, and necessary rotations
+
+        }
+
+
+
+        size++;
+    }
+
+    void remove(int val){
+
+
+
+        size--;
+    }
+
+    node& find(int val){
+
+    }
+
+
+};
+
+#endif //RED_BLACK_TREE_RBT_H
