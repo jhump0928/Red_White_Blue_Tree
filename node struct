@@ -1,0 +1,37 @@
+
+struct node{
+    int data;
+    char color;
+    bool isLeftChild;
+    bool isRightChild;
+    node* parent;
+    node* left;
+    node* right;
+
+    //Default Constructor = all false/nullptr, and data=0
+    node(){
+        data = 0;
+        color = 'b';
+        isLeftChild = false;
+        isRightChild = false;
+        parent = nullptr;
+        left = nullptr;
+        right = nullptr;
+    }
+
+
+    //NOTE: Null Nodes at end are represented with data = -1
+    node(int data, char color = 'b', node* parent = nullptr, node* left = nullptr,
+         node* right = nullptr, bool isLeftChild = false, bool isRightChild = false)
+         {
+
+            this->data = data;
+            this->color = color;
+            this->parent = parent;
+            this->left = left;
+            this->right = right;
+            this->isLeftChild = isLeftChild;
+            this->isRightChild = isRightChild;
+
+        }
+};
