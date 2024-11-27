@@ -26,7 +26,16 @@ private:
     //clone();
     
     //makeEmpty();
-    
+    int height(Node<T> *p){
+        int h = 0;
+        while(p->left != nullptr || p->right != nullptr){
+            h++;
+            height(p->left);
+            height(p->right);
+        }
+        return h;
+    }
+
     void insert(const T& value, Node<T>*& p){ //p IS the root, able to modify tree
         if(p == nullptr){
             p = new Node<T>{value, nullptr, nullptr}; //{} for consistency between objects
