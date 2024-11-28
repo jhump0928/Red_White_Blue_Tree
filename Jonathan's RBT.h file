@@ -158,18 +158,6 @@ private:
                 handleTree(currNode);
             }
 
-            //The previous 5 lines handle the problem in that area, and now grandparent of
-            //newNode can be treated as a newly inserted node with unknown color. Thus,
-            //we need to call this fixing function with the grandparent now.
-
-//            while(currNode!=root and currNode->parent!=root){
-//                currNode->color = 'r'; //currNode is red
-//                currNode->parent->color = 'b'; //currNode's parent is black
-//                currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
-//                currNode->parent->parent->color = 'r'; //currNode's grandparent is red
-//
-//                currNode = currNode->parent->parent;
-//            }
 
         }
         //Case 2b: Both parent and uncle of new node are red, and newNode's parent is a right child
@@ -188,18 +176,6 @@ private:
                 handleTree(currNode);
             }
 
-            //The previous 5 lines handle the problem in that area, and now grandparent of
-            //newNode can be treated as a newly inserted node with unknown color. Thus,
-            //we need to call this fixing function with the grandparent now.
-
-//            while(currNode!=root and currNode->parent!=root){
-//                currNode->color = 'r'; //currNode is red
-//                currNode->parent->color = 'b'; //currNode's parent is black
-//                currNode->parent->parent->left->color = 'b'; //currNode's uncle is black
-//                currNode->parent->parent->color = 'r'; //currNode's grandparent is red
-//
-//                currNode = currNode->parent->parent;
-//            }
 
         }
         //Case 3a: Parent is red and a right child, uncle is black, and newNode is a right child
