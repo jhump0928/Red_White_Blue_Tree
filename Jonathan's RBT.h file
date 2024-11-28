@@ -52,27 +52,79 @@ private:
     int size;
 
     void rotateLeft(node* n){
-        if(n->parent!=root) {
+        node* temp = n->right;
+        if(n!=root) {
             if (n->isLeftChild) {
                 n->parent->left = n->right;
+
+                temp->isLeftChild = true;
+                temp->isRightChild = false;
+
             } else { //n is a right child
                 n->parent->right = n->right;
+
+                n->isRightChild = false;
+                n->isLeftChild = true;
             }
+
+            temp->parent = n->parent;
         }
-        node* temp = n->right;
+        else if(n==root){
+            root = n->right;
+            temp->parent = nullptr;
+
+            temp->isRightChild = false;
+            temp->isLeftChild = false;
+
+            n->isLeftChild = true;
+            n->isRightChild = false;
+
+        }
+
+        temp->left->isLeftChild = false;
+        temp->left->isRightChild = true;
+
+        temp->left->parent = n; //temp's right subtree's parent is now the node n points to
+        n->parent = temp; //n's parent is now the node temp points to
+
         n->right = n->right->left;
         temp->left = n;
     }
 
     void rotateRight(node* n){
-        if(n->parent!=root) {
+        node* temp = n->left;
+        if(n!=root) {
             if (n->isLeftChild) {
                 n->parent->left = n->left;
+
+                n->isLeftChild = false;
+                n->isRightChild = true;
             } else {
                 n->parent->right = n->left;
+
+                temp->isRightChild = true;
+                temp->isLeftChild = false;
             }
+
+            temp->parent = n->parent;
         }
-        node* temp = n->left;
+        else if(n==root){
+            root=n->left;
+            temp->parent = nullptr;
+
+            temp->isRightChild = false;
+            temp->isLeftChild = false;
+
+            n->isRightChild = true;
+            n->isLeftChild = false;
+        }
+
+        temp->right->isRightChild = false; //because this subtree goes from being a right to left child
+        temp->right->isLeftChild = true;
+
+        temp->right->parent = n; //temp's right subtree's parent is now the node n points to
+        n->parent = temp; //n's parent is now the node temp points to
+
         n->left = n->left->right;
         temp->right = n;
     }
@@ -81,16 +133,142 @@ private:
     void recolor(){
 
     }
-    
+
+    //This function is to be used in tandem with insert
+    void handleTree(node* newNode){
+        //Adjusting Color, and necessary rotations
+        //Case 1: Parent of newNode is black
+        if(newNode->parent->color == 'b'){
+            newNode->color = 'r';
+        }
+        //Case 2a: Both parent and uncle of new node are red, and newNode's parent is a left child
+        else if(newNode->parent->color == 'r' and newNode->parent->isLeftChild
+                and newNode->parent->parent->right->color == 'r'){
+
+            node* currNode = newNode;
+
+            currNode->color = 'r'; //currNode is red
+            currNode->parent->color = 'b'; //currNode's parent is black
+            currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
+            currNode->parent->parent->color = 'r'; //currNode's grandparent is red
+
+            currNode = currNode->parent->parent;
+
+            if(currNode!=root and currNode->parent!=root){
+                handleTree(currNode);
+            }
+
+            //The previous 5 lines handle the problem in that area, and now grandparent of
+            //newNode can be treated as a newly inserted node with unknown color. Thus,
+            //we need to call this fixing function with the grandparent now.
+
+//            while(currNode!=root and currNode->parent!=root){
+//                currNode->color = 'r'; //currNode is red
+//                currNode->parent->color = 'b'; //currNode's parent is black
+//                currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
+//                currNode->parent->parent->color = 'r'; //currNode's grandparent is red
+//
+//                currNode = currNode->parent->parent;
+//            }
+
+        }
+        //Case 2b: Both parent and uncle of new node are red, and newNode's parent is a right child
+        else if(newNode->parent->color == 'r' and newNode->parent->isRightChild
+                and newNode->parent->parent->left->color == 'r'){
+
+            node* currNode = newNode;
+
+            currNode->color = 'r'; //newNode is red
+            currNode->parent->color = 'b'; //newNode's parent is black
+            currNode->parent->parent->left->color = 'b'; //newNode's uncle is black
+            currNode->parent->parent->color = 'r'; //newNode's grandparent is red
+
+            currNode = currNode->parent->parent;
+            if(currNode!=root and currNode->parent!=root){
+                handleTree(currNode);
+            }
+
+            //The previous 5 lines handle the problem in that area, and now grandparent of
+            //newNode can be treated as a newly inserted node with unknown color. Thus,
+            //we need to call this fixing function with the grandparent now.
+
+//            while(currNode!=root and currNode->parent!=root){
+//                currNode->color = 'r'; //currNode is red
+//                currNode->parent->color = 'b'; //currNode's parent is black
+//                currNode->parent->parent->left->color = 'b'; //currNode's uncle is black
+//                currNode->parent->parent->color = 'r'; //currNode's grandparent is red
+//
+//                currNode = currNode->parent->parent;
+//            }
+
+        }
+        //Case 3a: Parent is red and a right child, uncle is black, and newNode is a right child
+        else if(newNode->isRightChild and newNode->parent->isRightChild and
+                newNode->parent->color=='r' and newNode->parent->parent->left->color == 'b'){
+
+            newNode->color = 'r';
+            newNode->parent->color = 'b';
+            newNode->parent->parent->color = 'r';
+            rotateLeft(newNode->parent->parent);
+
+
+        }
+        //Case 3b: Parent is red and a left child, uncle is black, and newNode is a left child
+        else if(newNode->isLeftChild and newNode->parent->isLeftChild and
+                newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
+
+            newNode->color = 'r';
+            newNode->parent->color = 'b';
+            newNode->parent->parent->color = 'r';
+            rotateRight(newNode->parent->parent);
+
+
+        }
+        //Case 4a: Parent is red and a left child, uncle is black, and newNode is a right child
+        else if(newNode->isRightChild and newNode->parent->isLeftChild and
+                newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
+
+            newNode->color = 'b';
+            newNode->parent->color = 'r';
+            newNode->parent->parent->color = 'r';
+
+            //Creating these pointers because rotations could change things,
+            //simplifies tracking which node the rotation is in relation to.
+            node* oldNewNodeGrandparent = newNode->parent->parent;
+            node* oldNewNodeParent = newNode->parent;
+            rotateLeft(oldNewNodeParent);
+            rotateRight(oldNewNodeGrandparent);
+
+        }
+        //Case 4b: Parent is red and a right child, uncle is black, and newNode is a left child
+        else if(newNode->isLeftChild and newNode->parent->isRightChild and
+                newNode->parent->color=='r' and newNode->parent->parent->left->color=='b'){
+            newNode->color = 'b';
+            newNode->parent->color = 'r';
+            newNode->parent->parent->color = 'r';
+
+            //Creating these pointers because rotations could change things,
+            //simplifies tracking which node the rotation is in relation to.
+            node* oldNewNodeGrandparent = newNode->parent->parent;
+            node* oldNewNodeParent = newNode->parent;
+            rotateRight(oldNewNodeParent);
+            rotateLeft(oldNewNodeGrandparent);
+        }
+
+
+        //Root always black, so recoloring if necessary
+        root->color = 'b';
+    }
+
 
 public:
-    
+
     RBT(){
         //Root points to a node with value val
         root = nullptr;
         size=0;
     }
-    
+
     RBT(int val){
 
         //Root points to a node with value val
@@ -120,7 +298,8 @@ public:
             throw string("Error: Value Too Large");
         }
 
-        if(root==nullptr){
+        if(root==nullptr){ //If the tree is empty
+
             //Root points to a node with value val
             root = new node(val);
 
@@ -130,50 +309,173 @@ public:
 
             root->right = new node(-1);
             root->right->parent = root;
-        }
-        else{
-            //node* newNode = new node(val);
-            node *temp = root; //temp is used to find correct insertion point
 
-            while (temp->data != -1) {
-                if (val < temp->data) {
-                    temp = temp->left;
+            root->color = 'b';
+
+        }
+        else{ //Tree is not empty
+
+            node *newNode = root; //newNode is used to find correct insertion point
+
+            while (newNode->data != -1) {
+                if (val < newNode->data) {
+                    newNode = newNode->left;
                 } else {
-                    temp = temp->right;
+                    newNode = newNode->right;
                 }
             }
 
-            //Now, the temp ptr is pointing to the location where
+            //Now, the newNode ptr is pointing to the location where
             //node needs to be inserted.
 
             //assigning what WAS a null node with a value now, and adjusting its properties
             //Adjusting Data
-            temp->data = val;
+            newNode->data = val;
 
             //Adjusting isLeftChild and isRightChild
-            if (temp->parent->left == temp) {
-                temp->isLeftChild = true;
-                temp->isRightChild = false;
+            if (newNode->parent->left == newNode) {
+                newNode->isLeftChild = true;
+                newNode->isRightChild = false;
             } else {
-                temp->isLeftChild = false;
-                temp->isRightChild = true;
+                newNode->isLeftChild = false;
+                newNode->isRightChild = true;
             }
 
-            //No need to adjust temp's parent because every time a null node is created, it points back to its parent
+            //No need to adjust temp's parent because every time a null node is created, it points back to its parent.
+            //Thus, the node that was just "inserted" already points back to parent
 
             //Adjusting left and right:
-            //pointing left and right ptrs to null nodes
-            temp->left = new node(-1);
-            temp->left->parent = temp;
+            //pointing left and right ptrs to null nodes, thus creating null nodes
+            newNode->left = new node(-1);
+            newNode->left->parent = newNode;
+            newNode->left->isLeftChild = true;
+            newNode->left->isRightChild = false;
 
-            temp->right = new node(-1);
-            temp->right->parent = temp;
+            newNode->right = new node(-1);
+            newNode->right->parent = newNode;
+            newNode->right->isLeftChild = false;
+            newNode->right->isRightChild = true;
 
             //Adjusting Color, and necessary rotations
 
+            //TODO TEST
+            handleTree(newNode);
+
+//            //Case 1: Parent of newNode is black
+//            if(newNode->parent->color == 'b'){
+//                newNode->color = 'r';
+//            }
+//            //Case 2a: Both parent and uncle of new node are red, and newNode's parent is a left child
+//            else if(newNode->parent->color == 'r' and newNode->parent->isLeftChild
+//                    and newNode->parent->parent->right->color == 'r'){
+//
+//                node* currNode = newNode;
+//
+//                currNode->color = 'r'; //currNode is red
+//                currNode->parent->color = 'b'; //currNode's parent is black
+//                currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
+//                currNode->parent->parent->color = 'r'; //currNode's grandparent is red
+//
+//                currNode = currNode->parent->parent;
+//
+//                //The previous 5 lines handle the problem in that area, and now grandparent of
+//                //newNode can be treated as a newly inserted node with unknown color. Thus,
+//                //we need to call this fixing function with the grandparent now.
+//
+//                while(currNode!=root and currNode->parent!=root){
+//                    currNode->color = 'r'; //currNode is red
+//                    currNode->parent->color = 'b'; //currNode's parent is black
+//                    currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
+//                    currNode->parent->parent->color = 'r'; //currNode's grandparent is red
+//
+//                    currNode = currNode->parent->parent;
+//                }
+//
+//            }
+//            //Case 2b: Both parent and uncle of new node are red, and newNode's parent is a right child
+//            else if(newNode->parent->color == 'r' and newNode->parent->isRightChild
+//                    and newNode->parent->parent->left->color == 'r'){
+//
+//                node* currNode = newNode;
+//
+//                currNode->color = 'r'; //newNode is red
+//                currNode->parent->color = 'b'; //newNode's parent is black
+//                currNode->parent->parent->left->color = 'b'; //newNode's uncle is black
+//                currNode->parent->parent->color = 'r'; //newNode's grandparent is red
+//
+//                currNode = currNode->parent->parent;
+//
+//                //The previous 5 lines handle the problem in that area, and now grandparent of
+//                //newNode can be treated as a newly inserted node with unknown color. Thus,
+//                //we need to call this fixing function with the grandparent now.
+//
+//                while(currNode!=root and currNode->parent!=root){
+//                    currNode->color = 'r'; //currNode is red
+//                    currNode->parent->color = 'b'; //currNode's parent is black
+//                    currNode->parent->parent->left->color = 'b'; //currNode's uncle is black
+//                    currNode->parent->parent->color = 'r'; //currNode's grandparent is red
+//
+//                    currNode = currNode->parent->parent;
+//                }
+//
+//            }
+//            //Case 3a: Parent is red and a right child, uncle is black, and newNode is a right child
+//            else if(newNode->isRightChild and newNode->parent->isRightChild and
+//                    newNode->parent->color=='r' and newNode->parent->parent->left->color == 'b'){
+//
+//                newNode->color = 'r';
+//                newNode->parent->color = 'b';
+//                newNode->parent->parent->color = 'r';
+//                rotateLeft(newNode->parent->parent);
+//
+//
+//            }
+//            //Case 3b: Parent is red and a left child, uncle is black, and newNode is a left child
+//            else if(newNode->isLeftChild and newNode->parent->isLeftChild and
+//                    newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
+//
+//                newNode->color = 'r';
+//                newNode->parent->color = 'b';
+//                newNode->parent->parent->color = 'r';
+//                rotateRight(newNode->parent->parent);
+//
+//
+//            }
+//            //Case 4a: Parent is red and a left child, uncle is black, and newNode is a right child
+//            else if(newNode->isRightChild and newNode->parent->isLeftChild and
+//                    newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
+//
+//                newNode->color = 'b';
+//                newNode->parent->color = 'r';
+//                newNode->parent->parent->color = 'r';
+//
+//                //Creating these pointers because rotations could change things,
+//                //simplifies tracking which node the rotation is in relation to.
+//                node* oldNewNodeGrandparent = newNode->parent->parent;
+//                node* oldNewNodeParent = newNode->parent;
+//                rotateLeft(oldNewNodeParent);
+//                rotateRight(oldNewNodeGrandparent);
+//
+//            }
+//            //Case 4b: Parent is red and a right child, uncle is black, and newNode is a left child
+//            else if(newNode->isLeftChild and newNode->parent->isRightChild and
+//                    newNode->parent->color=='r' and newNode->parent->parent->left->color=='b'){
+//                newNode->color = 'b';
+//                newNode->parent->color = 'r';
+//                newNode->parent->parent->color = 'r';
+//
+//                //Creating these pointers because rotations could change things,
+//                //simplifies tracking which node the rotation is in relation to.
+//                node* oldNewNodeGrandparent = newNode->parent->parent;
+//                node* oldNewNodeParent = newNode->parent;
+//                rotateRight(oldNewNodeParent);
+//                rotateLeft(oldNewNodeGrandparent);
+//            }
+//
+//
+//            //Root always black, so recoloring if necessary
+//            root->color = 'b';
         }
-
-
 
         size++;
     }
