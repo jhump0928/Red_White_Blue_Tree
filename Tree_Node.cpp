@@ -97,7 +97,6 @@ int main(int argc, char *argv[]) {
     int maxDepth = 5;
     vector<Node> nodes(31, Node());
 
-    // Example: Manually creating a tree with connections
     for (int i = 0; i < 15; i++) {
         nodes[i].hasLeft = (2 * i + 1 < 15);  // Has left child
         nodes[i].hasRight = (2 * i + 2 < 15); // Has right child
