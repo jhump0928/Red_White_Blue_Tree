@@ -53,6 +53,7 @@ private:
     int size;
     vector<int> order;
     vector<int> arr;
+    vector<char> colors;
     void rotateLeft(node* n){
         node* temp = n->right;
         if(n!=root) {
@@ -252,6 +253,7 @@ private:
             // Print front of queue and remove it from queue
             node* node = q.front();
             arr.push_back(node->data);
+            colors.push_back(node->color);
             //cerr << node->data << " ";
             q.pop();
 
@@ -309,7 +311,16 @@ public:
 
     //destructor
     ~RBT(){
-        //Traverse and delete
+        cout << "DEstructor Called" << endl;
+        clearTree(root);
+    }
+    void clearTree(node* root) {
+        if(root->data != -1) {
+            clearTree(root->left);
+            clearTree(root->right);
+            //cout << root->data << " ";
+            delete root;
+        }
     }
     void createLevelOrder() {
         arr.clear();
@@ -321,14 +332,29 @@ public:
     }
     vector<int>& getLevelOrder() {
         arr.clear();
+        colors.clear();
         createLevelOrder(root);
         return arr;
     }
+    vector<char>& getColorOrder() {
+        colors.clear();
+        arr.clear();
+        createLevelOrder(root);
+        return colors;
+    }
     void remove(int val){
-        RBT temp;
-        remove(val,temp,root);
-        temp.printLevelOrder();
-        root= temp.root;
+        RBT *temp = new RBT;
+        remove(val,*temp,root);
+        //temp->printLevelOrder();
+        clearTree(root);
+        root = temp->root;
+        colors= temp->colors;
+        arr= temp->arr;
+        order = temp->order;
+        size = temp->size;
+        temp = nullptr;
+
+
     }
 
     node* find(node* root, int val) {
