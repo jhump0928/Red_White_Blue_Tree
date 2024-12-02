@@ -136,7 +136,6 @@ private:
     void recolor(){
 
     }
-
     //This function is to be used in tandem with insert
     void handleTree(node* newNode){
         //Adjusting Color, and necessary rotations
@@ -273,17 +272,6 @@ private:
         }
         cerr << endl;
     }
-    void remove(int val,RBT &tree,node* root){
-        for(int i=0; i < order.size();i++) {
-            if(order[i] == val) {
-                order.erase(order.begin()+i);
-                //tree.size--;
-                i--;
-            }
-            else
-                tree.insert(order[i]);
-        }
-    }
 
 public:
 
@@ -341,20 +329,6 @@ public:
         arr.clear();
         createLevelOrder(root);
         return colors;
-    }
-    void remove(int val){
-        RBT *temp = new RBT;
-        remove(val,*temp,root);
-        //temp->printLevelOrder();
-        clearTree(root);
-        root = temp->root;
-        colors= temp->colors;
-        arr= temp->arr;
-        order = temp->order;
-        size = temp->size;
-        temp = nullptr;
-
-
     }
 
     node* find(node* root, int val) {
@@ -438,6 +412,102 @@ void insert(int val){
         }
 
         size++;
+    }
+    void transplant(node* oldNode, node* newNode) {
+        if(oldNode->parent == nullptr) {
+            root = newNode;
+        }
+        else if( oldNode == oldNode->parent->left) {
+            oldNode->parent->left = newNode;
+        }
+        else {
+            oldNode->parent->right = newNode;
+
+        }
+        newNode->parent = oldNode->parent;
+    }
+    node* minMax(node* p) {
+        p = p->right;
+        while(p->left->data != -1) {
+            p = p->left;
+        }
+        return p;
+    }
+    void remove(int val) {
+        node* x = find(root,val);
+        node* y;
+        char ogCol = 'r';
+        if(x->right->data == -1 && x->left->data == -1) {
+            //no children
+            if(x->parent->right == x) {
+                x->parent->right = new node(-1);
+            }
+            else
+                x->parent->left = new node(-1);
+            delete x;
+        }
+        else if(x->left->data == -1 ) { //right child
+            ogCol= x->color;
+            y = x->right;
+            transplant(x,y);
+        }
+        else if(x->right->data == -1) { //left child
+            ogCol= x->color;
+            y= x->left;
+            transplant(x,y);
+        }
+        else { //case 4 2 children
+            y = minMax(x);
+            node* z = y->right;
+            transplant(y,z);
+            y->left = z->parent->parent->left;
+            y->right = z->parent;
+            z->parent->parent = y;
+            transplant(x,y);
+            removeFix(z);
+            //y->right=
+        }
+        if(ogCol == 'b' ) {
+            removeFix(y);
+        }
+    }
+    void removeFix(node* x) {
+        node* w;
+        if(x == x->parent->right) {
+            w = x->parent->left;
+        }
+        else
+            w = x->parent->right;
+        while( x!= root && x->color == 'b') {
+            //case 1 sbling red
+            if(w->color == 'r') {
+                w->color =='b';
+                x->parent->color = 'r';
+                rotateLeft(x->parent);
+                w = x->parent->right;
+            }
+            //case 2 sibling black and both nephews black
+            if(w->left->color == 'b' && w->right->color == 'b') {
+                w->color = 'r';
+                x = x->parent;
+            }
+            else { // case 3 w is black left nephew red
+                if( w->left->color == 'r') {
+                    w->left->color = 'b';
+                    w->color = 'r';
+                    rotateRight(w);
+                    w = x->parent->right;
+                }
+                //case 4 right nephew red
+                w->color = x->parent->color;
+                x->parent->color = 'b';
+                w->right->color = 'b';
+                rotateLeft(x->parent);
+                x = root;
+            }
+
+        }
+        x->color = 'b';
     }
 };
 
