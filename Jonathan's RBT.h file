@@ -12,8 +12,8 @@ using namespace std;
 struct node{
     int data;
     char color;
-    bool isLeftChild;
-    bool isRightChild;
+
+    bool isDoubleBlack;
     node* parent;
     node* left;
     node* right;
@@ -22,8 +22,7 @@ struct node{
     node(){
         data = 0;
         color = 'b';
-        isLeftChild = false;
-        isRightChild = false;
+        isDoubleBlack = false;
         parent = nullptr;
         left = nullptr;
         right = nullptr;
@@ -32,18 +31,18 @@ struct node{
 
     //NOTE: Null Nodes at end are represented with data = -1
     node(int data, char color = 'b', node* parent = nullptr, node* left = nullptr,
-         node* right = nullptr, bool isLeftChild = false, bool isRightChild = false)
-         {
+         node* right = nullptr, bool isLeftChild = false, bool isRightChild = false, bool isDoubleBlack = false)
+    {
 
-            this->data = data;
-            this->color = color;
-            this->parent = parent;
-            this->left = left;
-            this->right = right;
-            this->isLeftChild = isLeftChild;
-            this->isRightChild = isRightChild;
+        this->data = data;
+        this->color = color;
+        this->parent = parent;
+        this->left = left;
+        this->right = right;
+        this->isDoubleBlack = isDoubleBlack;
 
-        }
+    }
+
 };
 
 class RBT{
@@ -54,17 +53,13 @@ private:
     void rotateLeft(node* n){
         node* temp = n->right;
         if(n!=root) {
-            if (n->isLeftChild) {
+            if (isLeftChild(n)) {
                 n->parent->left = n->right;
 
-                temp->isLeftChild = true;
-                temp->isRightChild = false;
 
             } else { //n is a right child
                 n->parent->right = n->right;
 
-                n->isRightChild = false;
-                n->isLeftChild = true;
             }
 
             temp->parent = n->parent;
@@ -73,16 +68,9 @@ private:
             root = n->right;
             temp->parent = nullptr;
 
-            temp->isRightChild = false;
-            temp->isLeftChild = false;
-
-            n->isLeftChild = true;
-            n->isRightChild = false;
 
         }
 
-        temp->left->isLeftChild = false;
-        temp->left->isRightChild = true;
 
         temp->left->parent = n; //temp's right subtree's parent is now the node n points to
         n->parent = temp; //n's parent is now the node temp points to
@@ -94,16 +82,12 @@ private:
     void rotateRight(node* n){
         node* temp = n->left;
         if(n!=root) {
-            if (n->isLeftChild) {
+            if (isLeftChild(n)) {
                 n->parent->left = n->left;
 
-                n->isLeftChild = false;
-                n->isRightChild = true;
             } else {
                 n->parent->right = n->left;
 
-                temp->isRightChild = true;
-                temp->isLeftChild = false;
             }
 
             temp->parent = n->parent;
@@ -112,15 +96,7 @@ private:
             root=n->left;
             temp->parent = nullptr;
 
-            temp->isRightChild = false;
-            temp->isLeftChild = false;
-
-            n->isRightChild = true;
-            n->isLeftChild = false;
         }
-
-        temp->right->isRightChild = false; //because this subtree goes from being a right to left child
-        temp->right->isLeftChild = true;
 
         temp->right->parent = n; //temp's right subtree's parent is now the node n points to
         n->parent = temp; //n's parent is now the node temp points to
@@ -130,10 +106,6 @@ private:
     }
 
 
-    void recolor(){
-
-    }
-
     //This function is to be used in tandem with insert
     void handleTree(node* newNode){
         //Adjusting Color, and necessary rotations
@@ -141,8 +113,8 @@ private:
         if(newNode->parent->color == 'b'){
             newNode->color = 'r';
         }
-        //Case 2a: Both parent and uncle of new node are red, and newNode's parent is a left child
-        else if(newNode->parent->color == 'r' and newNode->parent->isLeftChild
+            //Case 2a: Both parent and uncle of new node are red, and newNode's parent is a left child
+        else if(newNode->parent->color == 'r' and isLeftChild(newNode->parent)
                 and newNode->parent->parent->right->color == 'r'){
 
             node* currNode = newNode;
@@ -158,10 +130,9 @@ private:
                 handleTree(currNode);
             }
 
-
         }
-        //Case 2b: Both parent and uncle of new node are red, and newNode's parent is a right child
-        else if(newNode->parent->color == 'r' and newNode->parent->isRightChild
+            //Case 2b: Both parent and uncle of new node are red, and newNode's parent is a right child
+        else if(newNode->parent->color == 'r' and isRightChild(newNode->parent)
                 and newNode->parent->parent->left->color == 'r'){
 
             node* currNode = newNode;
@@ -178,8 +149,8 @@ private:
 
 
         }
-        //Case 3a: Parent is red and a right child, uncle is black, and newNode is a right child
-        else if(newNode->isRightChild and newNode->parent->isRightChild and
+            //Case 3a: Parent is red and a right child, uncle is black, and newNode is a right child
+        else if(isRightChild(newNode) and isRightChild(newNode->parent) and
                 newNode->parent->color=='r' and newNode->parent->parent->left->color == 'b'){
 
             newNode->color = 'r';
@@ -189,8 +160,8 @@ private:
 
 
         }
-        //Case 3b: Parent is red and a left child, uncle is black, and newNode is a left child
-        else if(newNode->isLeftChild and newNode->parent->isLeftChild and
+            //Case 3b: Parent is red and a left child, uncle is black, and newNode is a left child
+        else if(isLeftChild(newNode) and isLeftChild(newNode->parent) and
                 newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
 
             newNode->color = 'r';
@@ -200,8 +171,8 @@ private:
 
 
         }
-        //Case 4a: Parent is red and a left child, uncle is black, and newNode is a right child
-        else if(newNode->isRightChild and newNode->parent->isLeftChild and
+            //Case 4a: Parent is red and a left child, uncle is black, and newNode is a right child
+        else if(isRightChild(newNode) and isLeftChild(newNode->parent) and
                 newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
 
             newNode->color = 'b';
@@ -216,8 +187,8 @@ private:
             rotateRight(oldNewNodeGrandparent);
 
         }
-        //Case 4b: Parent is red and a right child, uncle is black, and newNode is a left child
-        else if(newNode->isLeftChild and newNode->parent->isRightChild and
+            //Case 4b: Parent is red and a right child, uncle is black, and newNode is a left child
+        else if(isLeftChild(newNode) and isRightChild(newNode->parent) and
                 newNode->parent->color=='r' and newNode->parent->parent->left->color=='b'){
             newNode->color = 'b';
             newNode->parent->color = 'r';
@@ -234,6 +205,15 @@ private:
 
         //Root always black, so recoloring if necessary
         root->color = 'b';
+    }
+
+    void clearTree(node* root) {
+        if(root->data != -1) {
+            clearTree(root->left);
+            clearTree(root->right);
+            //cout << root->data << " ";
+            delete root;
+        }
     }
 
 
@@ -263,7 +243,8 @@ public:
 
     //destructor
     ~RBT(){
-        //Traverse and delete
+        //cout << "Destructor Called" << endl;
+        clearTree(root);
     }
 
     void insert(int val){
@@ -308,14 +289,6 @@ public:
             //Adjusting Data
             newNode->data = val;
 
-            //Adjusting isLeftChild and isRightChild
-            if (newNode->parent->left == newNode) {
-                newNode->isLeftChild = true;
-                newNode->isRightChild = false;
-            } else {
-                newNode->isLeftChild = false;
-                newNode->isRightChild = true;
-            }
 
             //No need to adjust temp's parent because every time a null node is created, it points back to its parent.
             //Thus, the node that was just "inserted" already points back to parent
@@ -324,149 +297,105 @@ public:
             //pointing left and right ptrs to null nodes, thus creating null nodes
             newNode->left = new node(-1);
             newNode->left->parent = newNode;
-            newNode->left->isLeftChild = true;
-            newNode->left->isRightChild = false;
 
             newNode->right = new node(-1);
             newNode->right->parent = newNode;
-            newNode->right->isLeftChild = false;
-            newNode->right->isRightChild = true;
 
             //Adjusting Color, and necessary rotations
-
-            //TODO TEST
             handleTree(newNode);
 
-//            //Case 1: Parent of newNode is black
-//            if(newNode->parent->color == 'b'){
-//                newNode->color = 'r';
-//            }
-//            //Case 2a: Both parent and uncle of new node are red, and newNode's parent is a left child
-//            else if(newNode->parent->color == 'r' and newNode->parent->isLeftChild
-//                    and newNode->parent->parent->right->color == 'r'){
-//
-//                node* currNode = newNode;
-//
-//                currNode->color = 'r'; //currNode is red
-//                currNode->parent->color = 'b'; //currNode's parent is black
-//                currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
-//                currNode->parent->parent->color = 'r'; //currNode's grandparent is red
-//
-//                currNode = currNode->parent->parent;
-//
-//                //The previous 5 lines handle the problem in that area, and now grandparent of
-//                //newNode can be treated as a newly inserted node with unknown color. Thus,
-//                //we need to call this fixing function with the grandparent now.
-//
-//                while(currNode!=root and currNode->parent!=root){
-//                    currNode->color = 'r'; //currNode is red
-//                    currNode->parent->color = 'b'; //currNode's parent is black
-//                    currNode->parent->parent->right->color = 'b'; //currNode's uncle is black
-//                    currNode->parent->parent->color = 'r'; //currNode's grandparent is red
-//
-//                    currNode = currNode->parent->parent;
-//                }
-//
-//            }
-//            //Case 2b: Both parent and uncle of new node are red, and newNode's parent is a right child
-//            else if(newNode->parent->color == 'r' and newNode->parent->isRightChild
-//                    and newNode->parent->parent->left->color == 'r'){
-//
-//                node* currNode = newNode;
-//
-//                currNode->color = 'r'; //newNode is red
-//                currNode->parent->color = 'b'; //newNode's parent is black
-//                currNode->parent->parent->left->color = 'b'; //newNode's uncle is black
-//                currNode->parent->parent->color = 'r'; //newNode's grandparent is red
-//
-//                currNode = currNode->parent->parent;
-//
-//                //The previous 5 lines handle the problem in that area, and now grandparent of
-//                //newNode can be treated as a newly inserted node with unknown color. Thus,
-//                //we need to call this fixing function with the grandparent now.
-//
-//                while(currNode!=root and currNode->parent!=root){
-//                    currNode->color = 'r'; //currNode is red
-//                    currNode->parent->color = 'b'; //currNode's parent is black
-//                    currNode->parent->parent->left->color = 'b'; //currNode's uncle is black
-//                    currNode->parent->parent->color = 'r'; //currNode's grandparent is red
-//
-//                    currNode = currNode->parent->parent;
-//                }
-//
-//            }
-//            //Case 3a: Parent is red and a right child, uncle is black, and newNode is a right child
-//            else if(newNode->isRightChild and newNode->parent->isRightChild and
-//                    newNode->parent->color=='r' and newNode->parent->parent->left->color == 'b'){
-//
-//                newNode->color = 'r';
-//                newNode->parent->color = 'b';
-//                newNode->parent->parent->color = 'r';
-//                rotateLeft(newNode->parent->parent);
-//
-//
-//            }
-//            //Case 3b: Parent is red and a left child, uncle is black, and newNode is a left child
-//            else if(newNode->isLeftChild and newNode->parent->isLeftChild and
-//                    newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
-//
-//                newNode->color = 'r';
-//                newNode->parent->color = 'b';
-//                newNode->parent->parent->color = 'r';
-//                rotateRight(newNode->parent->parent);
-//
-//
-//            }
-//            //Case 4a: Parent is red and a left child, uncle is black, and newNode is a right child
-//            else if(newNode->isRightChild and newNode->parent->isLeftChild and
-//                    newNode->parent->color=='r' and newNode->parent->parent->right->color == 'b'){
-//
-//                newNode->color = 'b';
-//                newNode->parent->color = 'r';
-//                newNode->parent->parent->color = 'r';
-//
-//                //Creating these pointers because rotations could change things,
-//                //simplifies tracking which node the rotation is in relation to.
-//                node* oldNewNodeGrandparent = newNode->parent->parent;
-//                node* oldNewNodeParent = newNode->parent;
-//                rotateLeft(oldNewNodeParent);
-//                rotateRight(oldNewNodeGrandparent);
-//
-//            }
-//            //Case 4b: Parent is red and a right child, uncle is black, and newNode is a left child
-//            else if(newNode->isLeftChild and newNode->parent->isRightChild and
-//                    newNode->parent->color=='r' and newNode->parent->parent->left->color=='b'){
-//                newNode->color = 'b';
-//                newNode->parent->color = 'r';
-//                newNode->parent->parent->color = 'r';
-//
-//                //Creating these pointers because rotations could change things,
-//                //simplifies tracking which node the rotation is in relation to.
-//                node* oldNewNodeGrandparent = newNode->parent->parent;
-//                node* oldNewNodeParent = newNode->parent;
-//                rotateRight(oldNewNodeParent);
-//                rotateLeft(oldNewNodeGrandparent);
-//            }
-//
-//
-//            //Root always black, so recoloring if necessary
-//            root->color = 'b';
         }
 
         size++;
     }
 
-    void remove(int val){
+    bool remove(int val){
+        bool removed = false;
+        bool found = false;
+        bool notInTree = false;
 
+        node* currNode = root;
 
+        //Basic Deletion for BST:
+        //Case 1: Deleted Node is a leaf
+        while(!found and !notInTree){
+            if(currNode!=nullptr){
+
+            }
+        }
 
         size--;
+        return removed;
     }
 
-    node& find(int val){
-
+    node* find(node* root, int val) {
+        if (root == nullptr || root->data == val) {
+            return root;
+        }
+        if (root->data < val) {
+            return find(root->right, val);
+        }
+        return find(root->left, val);
     }
 
+    //This function returns the tree position of a node with the value you
+    //pass into the function. Otherwise, it throws an exception if node does not exist.
+    //It should be part of the RBT Class as a public function
+    int getNodePosition(int val){
+        node* currNode = root;
+        bool found = false;
+        int position = 0;
+
+        if (currNode!=nullptr) {
+            position = 1; //currNode starts at root, at position 1
+
+            //CurrNode searches for the value, updating position based on if it goes left
+            //or right. Going left makes position*=2, whereas going right doubles position
+            //and adds 1.
+            while (currNode->data!=-1 and !found) {
+                if(val<currNode->data){
+                    currNode = currNode->left;
+                    position *= 2;
+                }
+                else if(val > currNode->data){
+                    currNode = currNode->right;
+                    position = (2*position) + 1;
+                }
+                else{ //the value has been found
+                    found = true;
+                }
+            }
+
+        }
+
+        if(!found) position = -1;
+
+        return position;
+    }
+
+    bool isLeftChild(node* currNode){
+        bool result = false;
+
+        if(currNode!=root){
+            if(currNode->parent->left == currNode){
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
+    bool isRightChild(node* currNode){
+        bool result = false;
+
+        if(currNode!=root){
+            if(currNode->parent->right == currNode){
+                result = true;
+            }
+        }
+
+        return result;
+    }
 
 };
 
