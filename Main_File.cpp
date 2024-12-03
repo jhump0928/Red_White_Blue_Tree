@@ -8,8 +8,9 @@
 #include "Font.h"
 #include "Display.h"
 #include "Interface.h"
-#include "RBT.h"
+//#include "RBT.h"
 
+using namespace std;
 
 // Made new simplified version need to merge based on others
 struct Node {
@@ -31,11 +32,11 @@ Node* insert(Node* root, int value) {
     }
     return root;
 }
-
+ 
 
 // Function to calculate node positions for display
 point getNodePosition(int level, int index, int baseX, int baseY, int horizontalSpacing) {
-    int x = baseX + index * horizontalSpacing / (1 << level); // Adjust spacing based on level
+    int x = baseX + index * horizontalSpacing / pow(2, level); // Adjust spacing based on level
     int y = baseY + level * 100;                             // Fixed vertical spacing
     return point(x, y);
 }
@@ -48,14 +49,14 @@ void drawTree(SDL_Plotter& g, font& iconFont, Node* root, int level, int index, 
 
     // Draw current node (circle)
     drawNode(g, "", 25, position, iconFont); // Circle radius of 25
-    iconFont.printText(g, std::to_string(root->value), position.x - 10, position.y - 10);
+    iconFont.printText(g, to_string(root->value), position.x - 10, position.y - 10);
 
     // Draw left child
     if (root->left != nullptr) {
-        point leftPosition = getNodePosition(level + 1, index * 2, baseX, baseY, spacing);
-        drawTree(g, iconFont, root->left, level + 1, index * 2, baseX, baseY, spacing);
+        point leftPosition = getNodePosition(level + 1, index * 2 - 1, baseX, baseY, spacing);
+        drawTree(g, iconFont, root->left, level + 1, index * 2 - 1, baseX, baseY, spacing);
     }
-
+ 
     // Draw right child
     if (root->right != nullptr) {
         point rightPosition = getNodePosition(level + 1, index * 2 + 1, baseX, baseY, spacing);
@@ -75,21 +76,21 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
 
     // Load font
     font iconFont(1, {255, 255, 255});
-    std::ifstream fontStream("Font.txt");
+    ifstream fontStream("Font.txt");
     assert(fontStream.is_open());
     iconFont.loadFont(fontStream);
     fontStream.close();
 
     // Create tree and add test values
     Node* root = nullptr;
-    std::vector<int> testValues = {50, 30, 70, 20, 40, 60, 80};
-    for (int i = 0 ; i < testValues.length() ; i ++) {
-        root = insert(root, i);
+    vector<int> testValues = {50, 30, 70, 20, 40, 60, 80};
+    for (int i = 0; i < testValues.size(); i++) {
+        root = insert(root, testValues[i]);
     }
 
     // Variables for UI
     treeOperation operationDisplay;
-    std::string inputNumber;
+    string inputNumber;
     bool readMode = false;
 
     // Calculate tree base position and spacing
