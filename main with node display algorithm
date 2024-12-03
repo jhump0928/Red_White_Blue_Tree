@@ -2,7 +2,7 @@
 //  main.cpp
 //  3334 Group Project
 //
-//  Created by Mac Johnson on 10/22/24.
+//  Created by Mac J on 10/22/24.
 //
 
 #include <iostream>
@@ -25,9 +25,10 @@ struct Node{
     Node* left;
     Node* right;
     int height=0; //or height can be calculated. easy fix
+    point location;
     
     Node(const int& d, Node* l, Node* r, Node* p): data(d), left(l),
-        right(r), parent(p) {}   // test node constructor.
+        right(r), parent(p) {}
 };
 
 int main() {
@@ -79,16 +80,25 @@ int main() {
     leaves.push_back(n6);
     
     leaves.push_back(n7);
-    
-    
-    while (!g.getQuit()) {
         
-        // This loop draws all nodes onto the screen.
+    while (!g.getQuit()) {
+        if (g.kbhit()) {
+            char c = g.getKey();
+            switch (toupper(c)) {
+                case 'C':
+                    g.clear();
+                    break;
+                case 'M':
+
+                    break;
+            }
+        }
+        
+        // loop that assigns locations to each node
         for (unsigned int i = 0; i < leaves.size(); i++) {
-            point p;
             int offset = 0;
             int count = 0; // number of nodes with same height behind current node
-            
+             
             for (int j = 1; j <= i; j++) {
                 if (leaves[i - j].height == leaves[i].height) {
                     count++;
@@ -99,13 +109,16 @@ int main() {
                 offset = 2 * count * SCREEN_WIDTH / (pow(2, leaves[i].height + 1));
             }
             
-            p.x = (SCREEN_WIDTH / (pow(2, leaves[i].height + 1))) + offset;
-            p.y = (leaves[i].height * 125) + 50;
+            leaves[i].location.x = (SCREEN_WIDTH / (pow(2, leaves[i].height + 1))) + offset;
+            leaves[i].location.y = (leaves[i].height * 125) + 50;
             
-            drawNode(g, to_string(leaves[i].data), 25, p, main);
         }
-                
         
+        // loop that displays every node onto the screen.
+        for (unsigned int i = 0; i < leaves.size(); i++) {
+            drawNode(g, to_string(leaves[i].data), 25, leaves[i].location, main);
+        }
+         
         g.update();
     }
 
