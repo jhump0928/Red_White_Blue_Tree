@@ -83,8 +83,8 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
     // Create tree and add test values
     Node* root = nullptr;
     std::vector<int> testValues = {50, 30, 70, 20, 40, 60, 80};
-    for (int value : testValues) {
-        root = insert(root, value);
+    for (int i = 0 ; i < testValues.length() ; i ++) {
+        root = insert(root, i);
     }
 
     // Variables for UI
