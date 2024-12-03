@@ -56,8 +56,24 @@ private:
     vector<char> colors;
     void rotateLeft(node* n){
         node* temp = n->right;
+
+        bool tempLeftChild = false;
+        bool tempRightChild = false;
+
         if(n!=root) {
-            if (n->isLeftChild) {
+            if(n->parent->left == n) {
+                tempLeftChild = true;
+                tempRightChild = false;
+            }
+            else if(n->parent->right == n) {
+                tempRightChild = true;
+                tempLeftChild = false;
+            }
+        }
+
+
+        if(n!=root) {
+            if (n->isLeftChild and tempLeftChild == true) {
                 n->parent->left = n->right;
 
                 temp->isLeftChild = true;
@@ -84,8 +100,8 @@ private:
 
         }
 
-        temp->left->isLeftChild = false;
-        temp->left->isRightChild = true;
+        // temp->left->isLeftChild = false;
+        // temp->left->isRightChild = true;
 
         temp->left->parent = n; //temp's right subtree's parent is now the node n points to
         n->parent = temp; //n's parent is now the node temp points to
@@ -121,7 +137,6 @@ private:
             n->isRightChild = true;
             n->isLeftChild = false;
         }
-
         temp->right->isRightChild = false; //because this subtree goes from being a right to left child
         temp->right->isLeftChild = true;
 
@@ -267,6 +282,8 @@ private:
         //cerr << endl;
     }
     void printLevelOrder(node* root) {
+        createLevelOrder(root);
+        arr.clear();
         for(int i=0; i < size; i++) {
             cerr << arr[i] << " ";
         }
@@ -426,62 +443,83 @@ void insert(int val){
         }
         newNode->parent = oldNode->parent;
     }
-    node* minMax(node* p) {
-        p = p->right;
-        while(p->left->data != -1) {
-            p = p->left;
+    node* maxMin(node* p) {
+        p = p->left;
+        while(p->right->data != -1) {
+            p = p->right;
         }
         return p;
     }
     void remove(int val) {
-        node* x = find(root,val);
+        size--;
+        node* z = find(root,val);
         node* y;
-        char ogCol = 'r';
-        if(x->right->data == -1 && x->left->data == -1) {
+        node* x;
+        char ogCol = 'b';
+        //no Children Case
+        if(z->right->data == -1 && z->left->data == -1) {
             //no children
-            if(x->parent->right == x) {
-                x->parent->right = new node(-1);
+            ogCol = z->color;
+            y= z->parent;
+            if(z->parent->right == z) {
+                y->right = new node(-1);
+                x = y->right;
+                x->parent = y;
             }
-            else
-                x->parent->left = new node(-1);
-            delete x;
+            else {
+                z->parent->left = new node(-1);
+                x =y->left;
+                x->parent = y;
+            }
+            delete z;
+
         }
-        else if(x->left->data == -1 ) { //right child
-            ogCol= x->color;
-            y = x->right;
-            transplant(x,y);
+        //RIGHT CHILD
+        else if(z->left->data == -1 ) { //right child
+            x = z->right;
+            transplant(z,x);
         }
-        else if(x->right->data == -1) { //left child
-            ogCol= x->color;
-            y= x->left;
-            transplant(x,y);
+        //LEFT CHILD
+        else if(z->right->data == -1) { //left child
+            x = z->left;
+            transplant(z,x);
         }
+        //DOUBLE CHILDREN
         else { //case 4 2 children
-            y = minMax(x);
-            node* z = y->right;
-            transplant(y,z);
-            y->left = z->parent->parent->left;
-            y->right = z->parent;
-            z->parent->parent = y;
-            transplant(x,y);
-            removeFix(z);
+            y = maxMin(z);
+            x = y->left;
+            ogCol= y->color;
+            if(y->parent == z) {
+                x->parent = y;
+            }
+            else {
+                transplant(y,x);
+                y->left = z->left;
+                y->left->parent = y;
+            }
+            transplant(z,y);
+            y->right = z-> right;
+            y->right->parent = y;
+            y->color = z->color;
             //y->right=
         }
+        //Always ececutes unless replacing red node with double Child
         if(ogCol == 'b' ) {
-            removeFix(y);
+            removeFix(x);
         }
     }
     void removeFix(node* x) {
+        bool doubleBlack = true;
         node* w;
-        if(x == x->parent->right) {
-            w = x->parent->left;
-        }
-        else
-            w = x->parent->right;
         while( x!= root && x->color == 'b') {
+            if(x->parent->left->data == x->data) {
+                w = x->parent->right;
+            }
+            else
+                w = x->parent->left;
             //case 1 sbling red
             if(w->color == 'r') {
-                w->color =='b';
+                w->color ='b';
                 x->parent->color = 'r';
                 rotateLeft(x->parent);
                 w = x->parent->right;
@@ -491,19 +529,19 @@ void insert(int val){
                 w->color = 'r';
                 x = x->parent;
             }
-            else { // case 3 w is black left nephew red
-                if( w->left->color == 'r') {
-                    w->left->color = 'b';
+            else { // case 3 w is black right nephew red
+                if( w->right->color == 'r') {
+                    w->right->color = 'b';
                     w->color = 'r';
                     rotateRight(w);
                     w = x->parent->right;
                 }
-                //case 4 right nephew red
-                w->color = x->parent->color;
-                x->parent->color = 'b';
-                w->right->color = 'b';
-                rotateLeft(x->parent);
-                x = root;
+                //case 4 left nephew red
+                     w->color = x->parent->color;
+                     x->parent->color = 'b';
+                     w->left->color = 'b';
+                    rotateRight(x->parent);
+                     x = root;
             }
 
         }
