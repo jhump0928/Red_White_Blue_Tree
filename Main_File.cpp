@@ -54,18 +54,18 @@ void drawTree(SDL_Plotter& g, font& iconFont, Node* root, int level, int index, 
     // Draw left child
     if (root->left != nullptr) {
         point leftPosition = getNodePosition(level + 1, index * 2 - 1, baseX, baseY, spacing);
+        drawLine(g, position, leftPosition, lightBlue);
         drawTree(g, iconFont, root->left, level + 1, index * 2 - 1, baseX, baseY, spacing);
+
     }
  
     // Draw right child
     if (root->right != nullptr) {
         point rightPosition = getNodePosition(level + 1, index * 2 + 1, baseX, baseY, spacing);
+        drawLine(g, position, rightPosition, lightBlue);
         drawTree(g, iconFont, root->right, level + 1, index * 2 + 1, baseX, baseY, spacing);
     }
 }
-
-//using namsepace std; //breaks everything for some reason
-
 
 const int SCREEN_WIDTH = 1400;
 const int SCREEN_HEIGHT = 700;
