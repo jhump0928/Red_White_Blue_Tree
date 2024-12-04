@@ -48,8 +48,7 @@ void drawTree(SDL_Plotter& g, font& iconFont, Node* root, int level, int index, 
     point position = getNodePosition(level, index, baseX, baseY, spacing);
 
     // Draw current node (circle)
-    drawNode(g, "", 25, position, iconFont); // Circle radius of 25
-    iconFont.printText(g, to_string(root->value), position.x - 10, position.y - 10);
+    drawNode(g, to_string(root->value), 25, position, iconFont); // Circle radius of 25
 
     // Draw left child
     if (root->left != nullptr) {
@@ -76,10 +75,15 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
 
     // Load font
     font iconFont(1, {255, 255, 255});
+    font nodeFont(2, {255, 255, 255});
     ifstream fontStream("Font.txt");
     assert(fontStream.is_open());
     iconFont.loadFont(fontStream);
     fontStream.close();
+    
+    ifstream fontStream2("Font.txt");
+    nodeFont.loadFont(fontStream2);
+    fontStream2.close();
 
     // Create tree and add test values
     Node* root = nullptr;
@@ -110,7 +114,7 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
         }
 
         // Draw tree (Once again fix)
-        drawTree(g, iconFont, root, 0, 0, baseX, baseY, spacing);
+        drawTree(g, nodeFont, root, 0, 0, baseX, baseY, spacing);
 
         // Handle SDL events
         if (g.kbhit()) {
