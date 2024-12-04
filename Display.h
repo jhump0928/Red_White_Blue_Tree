@@ -35,10 +35,12 @@ void drawLine(SDL_Plotter &g, point start, point end, color c = color(0, 0, 0)) 
         }
         e2 = 2 * err;
         if (e2 >= dy) {
-                err += dy; start.x += sx;
+            err += dy; 
+            start.x += sx;
         }
         if (e2 <= dx) {
-                err += dx; start.y += sy;
+            err += dx; 
+            start.y += sy;
         }
     }
 }
