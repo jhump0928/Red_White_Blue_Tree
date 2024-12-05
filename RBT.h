@@ -232,6 +232,13 @@ private:
         root->color = 'b';
     }
 
+    node* find(node* root, int val) {
+        if (root == nullptr || root->data == val)
+            return root;
+        if (root->data < val)
+            return find(root->right, val);
+        return find(root->left, val);
+    }
 
 public:
 
@@ -284,12 +291,8 @@ public:
         return arr;
     }
 
-    node* find(node* root, int val) {
-        if (root == NULL || root->data == val)
-            return root;
-        if (root->data < val)
-            return find(root->right, val);
-        return find(root->left, val);
+    node* find(int val) {
+        return find(root,val);
     }
 
     void insert(int val){
