@@ -49,8 +49,7 @@ class RBT{
 private:
     node* root;
     int size;
-    vector<int> arr;
-    vector<char> colors;
+    vector<node*> arr;
 
     void rotateLeft(node* n){
         node* temp = n->right;
@@ -113,8 +112,7 @@ private:
             while(!q.empty()) {
                 node* p;
                 p= q.front();
-                arr.push_back(p->data);
-                colors.push_back(p->color);
+                arr.push_back(p);
                 q.pop();
                 if(p->left->data != -1)
                     q.push(p->left);
@@ -125,7 +123,7 @@ private:
     }
     void printLevelOrder(node* root) {
         for(int i=0; i < size; i++) {
-            cerr << arr[i] << " ";
+            cerr << arr[i]->data << " ";
         }
         cerr << endl;
     }
@@ -278,17 +276,10 @@ public:
         createLevelOrder(root);
         printLevelOrder(root);
     }
-    vector<int>& getLevelOrder() {
+    vector<node*>& getLevelOrder() {
         arr.clear();
-        colors.clear();
         createLevelOrder(root);
         return arr;
-    }
-    vector<char>& getColorOrder() {
-        colors.clear();
-        arr.clear();
-        createLevelOrder(root);
-        return colors;
     }
 
     node* find(node* root, int val) {
