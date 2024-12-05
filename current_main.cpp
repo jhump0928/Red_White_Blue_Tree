@@ -1,14 +1,13 @@
 //Agony and pain by Andrew
 
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <cmath>
 #include "SDL_Plotter.h"
 #include "Font.h"
 #include "Display.h"
 #include "Interface.h"
-//#include "RBT.h"
+//#include "RBT.h"  
 
 using namespace std;
 
@@ -48,20 +47,19 @@ void drawTree(SDL_Plotter& g, font& iconFont, Node* root, int level, int index, 
     point position = getNodePosition(level, index, baseX, baseY, spacing);
 
     // Draw current node (circle)
-    drawNode(g, to_string(root->value), 25, position, iconFont); // Circle radius of 25
+    drawNode(g, to_string(root->value), 25, position, iconFont, red); // Circle radius of 25
 
     // Draw left child
     if (root->left != nullptr) {
         point leftPosition = getNodePosition(level + 1, index * 2 - 1, baseX, baseY, spacing);
-        drawLine(g, position, leftPosition, lightBlue);
+        drawLine(g, {position.x - 16, position.y + 16}, leftPosition, black);
         drawTree(g, iconFont, root->left, level + 1, index * 2 - 1, baseX, baseY, spacing);
-
     }
- 
+  
     // Draw right child
     if (root->right != nullptr) {
         point rightPosition = getNodePosition(level + 1, index * 2 + 1, baseX, baseY, spacing);
-        drawLine(g, position, rightPosition, lightBlue);
+        drawLine(g, {position.x + 16, position.y + 16}, rightPosition, black);
         drawTree(g, iconFont, root->right, level + 1, index * 2 + 1, baseX, baseY, spacing);
     }
 }
@@ -73,17 +71,9 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
     // SDL_Plotter instance
     SDL_Plotter g(SCREEN_HEIGHT, SCREEN_WIDTH);
 
-    // Load font
+    // Load fonts
     font iconFont(1, {255, 255, 255});
     font nodeFont(2, {255, 255, 255});
-    ifstream fontStream("Font.txt");
-    assert(fontStream.is_open());
-    iconFont.loadFont(fontStream);
-    fontStream.close();
-    
-    ifstream fontStream2("Font.txt");
-    nodeFont.loadFont(fontStream2);
-    fontStream2.close();
 
     // Create tree and add test values
     Node* root = nullptr;
@@ -111,9 +101,9 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
             operationDisplay.display(g, "insert", iconFont);
             operationDisplay.display(g, "delete", iconFont);
             operationDisplay.display(g, "find", iconFont);
-        }
+        } 
 
-        // Draw tree (Once again fix)
+        // Draw tree
         drawTree(g, nodeFont, root, 0, 0, baseX, baseY, spacing);
 
         // Handle SDL events
