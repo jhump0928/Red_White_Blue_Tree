@@ -519,6 +519,10 @@ public:
             father->right = oldNode-> right;
             father->right->parent = father;
             father->color = oldNode->color;
+            if(newNode->color == 'r' &&  ogCol == 'b') {
+                newNode->color = 'b';
+                ogCol = 'r';
+            }
             //father->right=
         }
         //Alwafathers ececutes unless replacing red node with double Child
@@ -528,75 +532,77 @@ public:
         }
     }
     void removeFix(node* x) {
-        node* sib = getSib(x);
         if(root== x) {
             x->color= 'b';
         }
-        //-------------------------------------------------
-        //sibling is black and atleast one nephew is red
-        if(isLeftChild(sib) && sib->color == 'b' && x->color == 'B') {
-            //case 1 LEFT LEFT
-            if(sib->left->color == 'r') {
-                sib->color= sib->parent->color;
-                sib->parent->color = 'b';
-                rotateRight(sib->parent);
-                sib->left->color = 'b';
-                x->color = 'b';
-                sib = getSib(x);
+        else
+        {
+            node* sib = getSib(x);
+            //-------------------------------------------------
+            //sibling is black and atleast one nephew is red
+            if(isLeftChild(sib) && sib->color == 'b' && x->color == 'B') {
+                //case 1 LEFT LEFT
+                if(sib->left->color == 'r') {
+                    sib->color= sib->parent->color;
+                    sib->parent->color = 'b';
+                    rotateRight(sib->parent);
+                    sib->left->color = 'b';
+                    x->color = 'b';
+                }
+                //case 2 Left Right
+                else if(sib->right->color == 'r') {
+                    sib->right->color = sib->color;
+                    sib->color = 'r';
+                    rotateLeft(sib);
+                    removeFix(x);
+                }
             }
-            //case 2 Left Right
-            if(sib->right->color == 'r') {
-                sib->right->color = sib->color;
+            if(isRightChild (sib) && sib->color == 'b'&& x->color == 'B') {
+                //case 3 RIGHT RIGHT =
+                if(sib->right->color == 'r') {
+                    sib->color= sib->parent->color;
+                    sib->parent->color = 'b';
+                    rotateLeft(sib->parent);
+                    sib->right->color = 'b';
+                    x->color = 'b';
+                }
+                //case 4 RIGHT LEFT
+                else if(sib->left->color == 'r') {
+                    sib->left->color = sib->color;
+                    sib->color = 'r';
+                    rotateRight(sib);
+                    removeFix(x);
+                }
+            }
+            //END black red cases
+            //CASE B all black cousins ----------------------
+            if( x->color == 'B' && sib->color == 'b' &&
+                sib->left->color == 'b' &&
+                sib->right->color == 'b') {
                 sib->color = 'r';
-                rotateLeft(sib);
+                if(x->parent->color == 'r') {
+                    x->parent->color = 'b';
+                }
+                else
+                    x->parent->color = 'B';
+                x->color = 'b';
+                removeFix(x->parent);
+                }
+            //END CASE B ------------------------------
+            //-----------------------------------------------
+            //CASE C RED SIBLING
+            else if(sib->color == 'r' && x->color == 'B') {
+                sib->color = 'b';
+                sib->parent->color = 'r';
+                if(isLeftChild(x)) {
+                    rotateLeft(x->parent);
+                }
+                else
+                    rotateRight(x->parent);
                 removeFix(x);
             }
+            //END CASE RED SIBLING
         }
-        if(isRightChild (sib) && sib->color == 'b'&& x->color == 'B') {
-            //case 3 RIGHT RIGHT =
-            if(sib->right->color == 'r') {
-                sib->color= sib->parent->color;
-                sib->parent->color = 'b';
-                rotateLeft(sib->parent);
-                sib->right->color = 'b';
-                x->color = 'b';
-            }
-            //case 4 RIGHT LEFT
-            if(sib->left->color == 'r') {
-                sib->left->color = sib->color;
-                sib->color = 'r';
-                rotateRight(sib);
-                removeFix(x);
-            }
-        }
-        //END black red cases
-        //CASE B all black cousins ----------------------
-        if( x->color == 'B' && sib->color == 'b' &&
-            sib->left->color == 'b' &&
-            sib->right->color == 'b') {
-            sib->color = 'r';
-            if(x->parent->color == 'r') {
-                x->parent->color = 'b';
-            }
-            else
-                x->parent->color = 'B';
-            x->color = 'b';
-            removeFix(x->parent);
-            }
-        //END CASE B ------------------------------
-        //-----------------------------------------------
-        //CASE C RED SIBLING
-        else if(sib->color == 'r' && x->color == 'B') {
-            sib->color = 'b';
-            sib->parent->color = 'r';
-            if(isLeftChild(x)) {
-                rotateLeft(x->parent);
-            }
-            else
-                rotateRight(x->parent);
-            removeFix(x);
-        }
-        //END CASE RED SIBLING
     }
 };
 
