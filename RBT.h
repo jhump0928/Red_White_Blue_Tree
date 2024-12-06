@@ -286,6 +286,8 @@ public:
             //cout << root->data << " ";
             delete root;
         }
+        size = 0;
+        root = nullptr;
     }
     void createLevelOrder() {
         arr.clear();
@@ -320,8 +322,8 @@ public:
             throw string("Error: Value Too Large");
         }
 
-        if(root==nullptr){ //If the tree is empty
-
+        if(root == nullptr){ //If the tree is empty
+            
             //Root points to a node with value val
             root = new node(val);
 
