@@ -61,6 +61,44 @@ void drawLine(SDL_Plotter &g, point start, point end, color c = color(0, 0, 0)) 
     }
 }
 
+//function to draw the ring
+void drawRing(SDL_Plotter& g, int radius, point p, color c) {
+    for (int y = -radius; y <= radius; y++) {
+        for (int x = -radius; x <= radius; x++) {
+            if (sqrt(pow(x, 2) + pow(y, 2)) <= radius) {
+                if (sqrt(pow(x, 2) + pow(y, 2)) >= radius - 2) {
+                    g.plotPixel(x + p.x, y + p.y, {0, 0, 0});
+                }
+                else {
+                    g.plotPixel(x + p.x, y + p.y, c);
+                }
+            }
+        }
+    }
+
+//Function to draw the path
+void drawPath(SDL_Plotter& g, node* root, int cmpVal, int level, int index, int baseX, int baseY, int spacing) {
+	if (root==nullptr) return;
+
+	point position = getNodePosition ( level, index, baseX, baseY, spacing);
+
+	g.sleep(30);
+
+	if ( root->data != cmpVal ) {
+		DrawRing(g, 30, position, yellow);
+	}
+
+	if ( root->left < cmpVal ) {
+		drawPath ( g, root->left, level + 1, index, baseX, baseY, spacing) ;
+	}
+
+	if ( root->left > cmpVal ) {
+		drawPath ( g, root->right, level + 1, index, baseX, baseY, spacing) ;
+	}
+
+}
+
+
 // Function to draw the tree
 void drawTree(SDL_Plotter& g, font& iconFont, node* root, int level, int index, int baseX, int baseY, int spacing) {
     if (root == nullptr) return;
