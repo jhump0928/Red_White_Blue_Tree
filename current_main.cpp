@@ -122,8 +122,10 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
             else if (c == 'k') {
                 if (nodes.size() > 0) {
                     tree.clearTree(nodes[0]);
-                }
-            }
+                    nodes.clear();
+                    g.clear();
+                } 
+            } 
             else if(c>=48 and c<=57){ //if within 0-9, ASCII
                 if(readMode) {
                     if (inputNumber.size() < 2) {
@@ -197,6 +199,10 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
                     if(!inputNumber.empty()) {
                         finalNumber = stringToInt(inputNumber);//only do this if inputNumber is not empty
                         if (lastOperation == 'i') {
+                            if (nodes.size() > 0) {
+                                drawPath(g, nodes[0], finalNumber, 0, 0, baseX, baseY, spacing);
+                            }
+                            g.Sleep (400);
                             tree.insert(finalNumber);
                             tree.stopAllGlowing();
                         }
