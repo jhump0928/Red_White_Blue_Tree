@@ -19,6 +19,8 @@ struct node{
     node* parent;
     node* left;
     node* right;
+    
+    bool glowingFlag;
 
     //Default Constructor = all false/nullptr, and data=0
     node(){
@@ -28,6 +30,7 @@ struct node{
         parent = nullptr;
         left = nullptr;
         right = nullptr;
+        glowingFlag = false;
     }
 
 
@@ -233,10 +236,14 @@ private:
     }
 
     node* find(node* root, int val) {
-        if (root == nullptr || root->data == val)
+        if (root == nullptr || root->data == val) {
+            root->glowingFlag = true;
             return root;
-        if (root->data < val)
+        }
+            
+        if (root->data < val) {
             return find(root->right, val);
+        }
         return find(root->left, val);
     }
 
@@ -293,6 +300,13 @@ public:
 
     node* find(int val) {
         return find(root,val);
+    }
+    
+    // new function to clear glowing flags
+    void stopAllGlowing() {
+        for (unsigned int i = 0; i < arr.size(); i++) {
+            arr[i]->glowingFlag = false;
+        }
     }
 
     void insert(int val){
