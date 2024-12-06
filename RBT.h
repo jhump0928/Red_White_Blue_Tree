@@ -19,7 +19,7 @@ struct node{
     node* parent;
     node* left;
     node* right;
-    
+
     bool glowingFlag;
 
     //Default Constructor = all false/nullptr, and data=0
@@ -236,11 +236,14 @@ private:
     }
 
     node* find(node* root, int val) {
-        if (root == nullptr || root->data == val) {
+        if(root == nullptr) {
+            return nullptr;
+        }
+        if ( root->data == val) {
             root->glowingFlag = true;
             return root;
         }
-            
+
         if (root->data < val) {
             return find(root->right, val);
         }
@@ -301,7 +304,7 @@ public:
     node* find(int val) {
         return find(root,val);
     }
-    
+
     // new function to clear glowing flags
     void stopAllGlowing() {
         for (unsigned int i = 0; i < arr.size(); i++) {
@@ -458,89 +461,93 @@ public:
         return x->parent->left;
     }
      void remove(int val) {
-        if(size>1){
-            size--;
-            node* oldNode = find(root,val);
-            node* father;
-            node* newNode;
-            char ogCol = 'b';
-            //no Children Case
-            if(oldNode->right->data == -1 && oldNode->left->data == -1) {
-                //no children
-                ogCol = oldNode->color;
-                father= oldNode->parent;
-                newNode = new node(-1);
-                if(oldNode->parent->right == oldNode) {
-                    father->right = newNode;
-                    newNode->parent = father;
-                    if(ogCol == 'b') {
-                        newNode->color = 'B';
+        node* oldNode = find(root,val);
+        if(oldNode != nullptr) {
+            if(size>1){
+                size--;
+                node* father;
+                node* newNode;
+                char ogCol = 'b';
+                //no Children Case
+                if(oldNode->right->data == -1 && oldNode->left->data == -1) {
+                    //no children
+                    ogCol = oldNode->color;
+                    father= oldNode->parent;
+                    newNode = new node(-1);
+                    if(oldNode->parent->right == oldNode) {
+                        father->right = newNode;
+                        newNode->parent = father;
+                        if(ogCol == 'b') {
+                            newNode->color = 'B';
+                        }
+                        delete oldNode;
                     }
-                    delete oldNode;
-                }
-                else {
-                    father->left= newNode;
-                    newNode->parent = father;
-                    if(ogCol == 'b') {
-                        newNode->color = 'B';
+                    else {
+                        father->left= newNode;
+                        newNode->parent = father;
+                        if(ogCol == 'b') {
+                            newNode->color = 'B';
+                        }
+                        delete oldNode;
                     }
-                    delete oldNode;
-                }
 
-            }
-            //RIGHT CHILD
-            else if(oldNode->left->data == -1 ) { //right child
-                newNode = oldNode->right;
-                transplant(oldNode,newNode);
-                if(newNode->color == 'r' || oldNode->color == 'r') {
-                    newNode->color = 'b';
-                    ogCol= 'r';
+                }
+                //RIGHT CHILD
+                else if(oldNode->left->data == -1 ) { //right child
+                    newNode = oldNode->right;
+                    transplant(oldNode,newNode);
+                    if(newNode->color == 'r' || oldNode->color == 'r') {
+                        newNode->color = 'b';
+                        ogCol= 'r';
+                    }
+                }
+                //LEFT CHILD
+                else if(oldNode->right->data == -1) { //left child
+                    ogCol= oldNode->color;
+                    newNode = oldNode->left;
+                    transplant(oldNode,newNode);
+                    if(newNode ->color== 'r' || oldNode->color == 'r') {
+                        newNode->color = 'b';
+                        ogCol= 'r';
+                    }
+                }
+                //DOUBLE CHILDREN
+                else { //case 4 2 children
+                    father = maxMin(oldNode);
+                    newNode = father->left;
+                    ogCol= father->color;
+                    if(father->parent == oldNode) {
+                        newNode->parent = father;
+                    }
+                    else {
+                        transplant(father,newNode);
+                        father->left = oldNode->left;
+                        father->left->parent = father;
+                    }
+                    transplant(oldNode,father);
+                    father->right = oldNode-> right;
+                    father->right->parent = father;
+                    father->color = oldNode->color;
+                    if(newNode->color == 'r' &&  ogCol == 'b') {
+                        newNode->color = 'b';
+                        ogCol = 'r';
+                    }
+                    //father->right=
+                }
+                //Alwafathers ececutes unless replacing red node with double Child
+                if(ogCol == 'b' ) {
+                    newNode->color= 'B';
+                    removeFix(newNode);
                 }
             }
-            //LEFT CHILD
-            else if(oldNode->right->data == -1) { //left child
-                ogCol= oldNode->color;
-                newNode = oldNode->left;
-                transplant(oldNode,newNode);
-                if(newNode ->color== 'r' || oldNode->color == 'r') {
-                    newNode->color = 'b';
-                    ogCol= 'r';
-                }
-            }
-            //DOUBLE CHILDREN
-            else { //case 4 2 children
-                father = maxMin(oldNode);
-                newNode = father->left;
-                ogCol= father->color;
-                if(father->parent == oldNode) {
-                    newNode->parent = father;
-                }
-                else {
-                    transplant(father,newNode);
-                    father->left = oldNode->left;
-                    father->left->parent = father;
-                }
-                transplant(oldNode,father);
-                father->right = oldNode-> right;
-                father->right->parent = father;
-                father->color = oldNode->color;
-                if(newNode->color == 'r' &&  ogCol == 'b') {
-                    newNode->color = 'b';
-                    ogCol = 'r';
-                }
-                //father->right=
-            }
-            //Alwafathers ececutes unless replacing red node with double Child
-            if(ogCol == 'b' ) {
-                newNode->color= 'B';
-                removeFix(newNode);
+            else {
+                delete root;
+                root = nullptr;
+                size--;
             }
         }
-        else {
-            delete root;
-            root = nullptr;
-            size--;
-        }
+        else
+            cout << "hi";
     }
     void removeFix(node* x) {
         if(root== x) {
