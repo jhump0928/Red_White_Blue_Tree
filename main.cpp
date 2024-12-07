@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
                             tree.stopAllGlowing();
                             tree.find(traversalOrder[i]);
 
-                            // Draw tree
+                            // Draw tree (Version for highlighting traversal)
                             nodes = tree.getLevelOrder();
                             tree.printLevelOrder();
                             if (nodes.size() > 0) {
@@ -190,7 +190,6 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
                             tree.stopAllGlowing();
                             tree.insert(finalNumber);
 
-
                             tree.find(finalNumber);
                             // Draw tree
                             nodes = tree.getLevelOrder();
@@ -201,7 +200,6 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
                             g.update();
 
                             g.Sleep(800);
-
 
                             tree.stopAllGlowing();
                         }
@@ -224,7 +222,7 @@ int main(int argc, char* argv[]) { //Apparently main must have arguments in this
             }
         }
 
-        // Draw tree
+        // Draw tree 
         nodes = tree.getLevelOrder();
         tree.printLevelOrder();
         if (nodes.size() > 0) {
