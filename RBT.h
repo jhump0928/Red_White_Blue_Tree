@@ -52,6 +52,9 @@ private:
     int size;
     vector<node*> arr;
 
+    //This function rotates the tree and its subtrees left, in relation
+    //to a 'peak' node (the highest node involved in the rotation). It is
+    //passed a node* to this peak node.
     void rotateLeft(node* n){
         node* temp = n->right;
         if(n!=root) {
@@ -81,6 +84,10 @@ private:
         temp->left = n;
     }
 
+
+    //This function rotates the tree and its subtrees right, in relation
+    //to a 'peak' node (the highest node involved in the rotation). It is
+    //passed a node* to this peak node.
     void rotateRight(node* n){
         node* temp = n->left;
         if(n!=root) {
@@ -286,7 +293,7 @@ public:
 
     //destructor
     ~RBT(){
-        cout << "DEstructor Called" << endl;
+        //cout << "DEstructor Called" << endl;
         clearTree();
     }
 
