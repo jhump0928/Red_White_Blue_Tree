@@ -106,22 +106,32 @@ private:
         n->left = n->left->right;
         temp->right = n;
     }
+    //updates arr with a level order traversla of the tree
     void createLevelOrder(node* root) {
         if(size>0) {
+                //usees a queueu instead of recursion to level order
             queue<node*> q;
             q.push(root);
+            //root is first 1 pop per run
+
             while(!q.empty()) {
                 node* p;
                 p= q.front();
                 arr.push_back(p);
                 q.pop();
+                //if root has a left then it becomes next item
+
                 if(p->left->data != -1)
                     q.push(p->left);
+                //if root has a right then it becomes the next item
+
                 if(p->right->data != -1)
                     q.push(p->right);
             }
         }
     }
+    //prints the level order doesnt ever get called
+
     void printLevelOrder(node* root) {
         for(int i=0; i < size; i++) {
             cerr << arr[i]->data << " ";
@@ -230,15 +240,19 @@ private:
         //Root always black, so recoloring if necessary
         root->color = 'b';
     }
+    // lots of garuds since this caused alot of problems
 
     node* find(node* root, int val) {
         if(root == nullptr) {
             return nullptr;
         }
+        //if this is the node then return it
+
         if ( root->data == val) {
             root->glowingFlag = true;
             return root;
         }
+        //recurse down
 
         if (root->data < val) {
             return find(root->right, val);
@@ -276,29 +290,34 @@ public:
         clearTree();
     }
 
+    //frees all memory in the tree
 
     void clearTree() {
+//post order traversal deleting eeach node on the way up
         vector<node*> temp = getLevelOrder();
         for(int i=0;i<temp.size();i++){
             remove(temp[i]->data);
         }
     }
 
-
+    //shell for create level order
     void createLevelOrder() {
         arr.clear();
         createLevelOrder(root);
     }
+    //shell for print level order
     void printLevelOrder() {
         createLevelOrder(root);
         printLevelOrder(root);
     }
     vector<node*>& getLevelOrder() {
+        //clear the current level order since tree maybe changed
         arr.clear();
+        //rebuild the level order
         createLevelOrder(root);
         return arr;
     }
-
+    //shell for find
     node* find(int val) {
         return find(root,val);
     }
@@ -433,10 +452,13 @@ public:
 
         return result;
     }
+    //transplant replaces allthe connections of a node with another node
     void transplant(node* oldNode, node* newNode) {
+            //gaurd case
         if(oldNode->parent == nullptr) {
             root = newNode;
         }
+//connect parrents children to newnode
         else if( oldNode == oldNode->parent->left) {
             oldNode->parent->left = newNode;
         }
@@ -444,26 +466,34 @@ public:
             oldNode->parent->right = newNode;
 
         }
+         //connects parrents going up
         newNode->parent = oldNode->parent;
     }
+  //finds the furthest right node on the left branch of the tree
     node* maxMin(node* p) {
         p = p->left;
+        //go all the way right
         while(p->right->data != -1) {
             p = p->right;
         }
         return p;
     }
+    //gets the sibling of a child based on wheter left or right child
     node* getSib(node* x) {
         if(isLeftChild(x) ) {
             return x->parent->right;
         }
         return x->parent->left;
     }
+//Remove
     void remove(int val) {
+        //uses find to get the node removed
+
         node* oldNode = find(root,val);
         node* temp = oldNode;
 
         if(oldNode != nullptr) {
+            //gaurd
             if(size>1){
                 size--;
                 node* father;
@@ -475,14 +505,17 @@ public:
                     ogCol = oldNode->color;
                     father= oldNode->parent;
                     newNode = new node(-1);
+                    //simple delete and color update
                     if(oldNode->parent->right == oldNode) {
                         father->right = newNode;
                         newNode->parent = father;
                         if(ogCol == 'b') {
+                            //B= dblack
                             newNode->color = 'B';
                         }
                         //delete oldNode;
                     }
+                        //left child case
                     else {
                         father->left= newNode;
                         newNode->parent = father;
@@ -496,7 +529,9 @@ public:
                     //RIGHT CHILD
                 else if(oldNode->left->data == -1 ) { //right child
                     newNode = oldNode->right;
+                    //replace connections with transplant
                     transplant(oldNode,newNode);
+                    //update colors
                     if(newNode->color == 'r' || oldNode->color == 'r') {
                         newNode->color = 'b';
                         ogCol= 'r';
@@ -506,7 +541,9 @@ public:
                 else if(oldNode->right->data == -1) { //left child
                     ogCol= oldNode->color;
                     newNode = oldNode->left;
+                    //replace connections with transplant
                     transplant(oldNode,newNode);
+                    //update colors
                     if(newNode ->color== 'r' || oldNode->color == 'r') {
                         newNode->color = 'b';
                         ogCol= 'r';
@@ -514,6 +551,7 @@ public:
                 }
                     //DOUBLE CHILDREN
                 else { //case 4 2 children
+                    //max of the mins
                     father = maxMin(oldNode);
                     newNode = father->left;
                     ogCol= father->color;
@@ -521,14 +559,17 @@ public:
                         newNode->parent = father;
                     }
                     else {
+                        //newnode becomes parrent
                         transplant(father,newNode);
                         father->left = oldNode->left;
                         father->left->parent = father;
                     }
+                    //father becomes the parrent
                     transplant(oldNode,father);
                     father->right = oldNode-> right;
                     father->right->parent = father;
                     father->color = oldNode->color;
+                    //update colros
                     if(newNode->color == 'r' &&  ogCol == 'b') {
                         newNode->color = 'b';
                         ogCol = 'r';
@@ -536,11 +577,13 @@ public:
                     //father->right=
                 }
                 //Alwafathers ececutes unless replacing red node with double Child
+                //if Dblack then remove fix
                 if(ogCol == 'b' ) {
                     newNode->color= 'B';
                     removeFix(newNode);
                 }
             }
+                //gaurds
             else {
                 root = nullptr;
                 size--;
@@ -560,7 +603,7 @@ public:
             //-------------------------------------------------
             //sibling is black and atleast one nephew is red
             if(isLeftChild(sib) && sib->color == 'b' && x->color == 'B') {
-                //case 1 LEFT LEFT
+                //case 1 LEFT LEFT------------------
                 if(sib->left->color == 'r') {
                     sib->color= sib->parent->color;
                     sib->parent->color = 'b';
@@ -568,7 +611,7 @@ public:
                     sib->left->color = 'b';
                     x->color = 'b';
                 }
-                    //case 2 Left Right
+                    //case 2 Left Right----------------
                 else if(sib->right->color == 'r') {
                     sib->right->color = sib->color;
                     sib->color = 'r';
@@ -577,7 +620,7 @@ public:
                 }
             }
             if(isRightChild (sib) && sib->color == 'b'&& x->color == 'B') {
-                //case 3 RIGHT RIGHT =
+                //case 3 RIGHT RIGHT =--------------------------
                 if(sib->right->color == 'r') {
                     sib->color= sib->parent->color;
                     sib->parent->color = 'b';
@@ -585,7 +628,7 @@ public:
                     sib->right->color = 'b';
                     x->color = 'b';
                 }
-                    //case 4 RIGHT LEFT
+                    //case 4 RIGHT LEFT-------------------
                 else if(sib->left->color == 'r') {
                     sib->left->color = sib->color;
                     sib->color = 'r';
