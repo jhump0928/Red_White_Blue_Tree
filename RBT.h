@@ -624,6 +624,33 @@ public:
             //END CASE RED SIBLING
         }
     }
+
+    vector<int> frontEndFind(int val){
+        vector<int> nodesTraversed;
+        bool found = false;
+
+        node* currNode = root;
+
+        if(currNode!=nullptr){ //if tree not empty
+            while(currNode->data!=-1 and !found){
+                nodesTraversed.push_back(currNode->data);
+
+                if(val < currNode->data){
+                    currNode = currNode->left;
+                }
+                else if (val > currNode->data){
+                    currNode = currNode->right;
+                }
+                else{
+                    found = true;
+                }
+
+            }
+        }
+
+        return nodesTraversed;
+    }
+
 };
 
 #endif //RED_BLACK_TREE_RBT_H
