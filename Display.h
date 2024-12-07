@@ -1,9 +1,11 @@
-//
-//  Display.h
-//  3334 Group Project
-//
-//  Created by Mac J on 11/7/24.
-//
+// RBT Group Project
+// Group: Red White and Blue Tree
+// Members: Andrew Crotwell, Faith Ota, Ben Collett,
+//         Mac Johnson, Jonathan Humphries
+// Date Last Edited: 12/7/2024
+// Date Due: 12/8/2024
+
+// Display File
 
 #ifndef Display_h
 #define Display_h
