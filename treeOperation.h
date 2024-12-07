@@ -2,6 +2,10 @@
 // Created by jhump on 11/13/2024.
 //
 
+//The following file handles code related to the treeOperation icons in
+//the top left corner of the SDL screen. It displays text and the icons
+//based off a specified mode.
+
 #ifndef RBT_GROUP_PROJECT_TREEOPERATION_H
 #define RBT_GROUP_PROJECT_TREEOPERATION_H
 
@@ -15,10 +19,13 @@
 
 using namespace std;
 
+//These points are the top left corner for the icons
 point insertOperationIconPoint(20,20);
 point deleteOperationIconPoint(150,20);
 point findOperationIconPoint(280,20);
 
+
+//turns a string of numeric digits to an int
 int stringToInt(string inputString){
     stringstream ss;
     ss << inputString;
@@ -29,6 +36,7 @@ int stringToInt(string inputString){
     return result;
 }
 
+//Draws a rectangle with specified size, with a specified color
 void drawRectangle(SDL_Plotter &g, point upperLeft, int width=100, int height = 40, color c = darkBlue){
     for(int i=upperLeft.x;i<upperLeft.x+width;i++){
         for(int j=upperLeft.y;j<upperLeft.y+height;j++){
@@ -37,26 +45,21 @@ void drawRectangle(SDL_Plotter &g, point upperLeft, int width=100, int height = 
     }
 }
 
+//Writes a number at a small offset off the upperLeft point
 void writeNumber(SDL_Plotter &g, point upperLeft,char digit,int xOffset, font iconFont){
     iconFont.printText(g, to_string(char(digit)),upperLeft.x+xOffset,upperLeft.y+10);
 }
 
+//The following class creates and displays the icons for the treeOperations. 
 class treeOperation{
 private:
     int lastEnteredValue;
 public:
 
-
-
     //The display function displays the default "Insert" or "Delete" icon.
     //You must pass either "insert" or "delete" as the operation into the function,
     //or else you will throw an exception.
     void display(SDL_Plotter &g, string operation, font iconFont){
-
-
-
-        //1b: Font to go on the treeOperations
-
 
         //The following code writes characters based off the mode
         if(operation == "insert"){
