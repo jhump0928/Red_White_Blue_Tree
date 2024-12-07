@@ -21,6 +21,7 @@ point getNodePosition(int level, int index, int baseX, int baseY, int horizontal
     return point(x, y);
 }
 
+// Function to draw nodes
 void drawNode(SDL_Plotter& g, string val, int radius, point p, font f, color c) {
     for (int y = -radius; y <= radius; y++) {
         for (int x = -radius; x <= radius; x++) {
@@ -34,14 +35,16 @@ void drawNode(SDL_Plotter& g, string val, int radius, point p, font f, color c) 
             }
         }
     }
+    // Function to print number on top of node
     f.printText(g, val, p.x - radius, p.y - radius + 10);
 }
 
+// function to draw lines between nodes
 void drawLine(SDL_Plotter &g, point start, point end, color c = color(0, 0, 0)) {
     int dx = abs(end.x - start.x), sx = start.x < end.x ? 1 : -1;
     int dy = -abs(end.y - start.y), sy = start.y < end.y ? 1 : -1;
     int err = dx + dy, e2;
-
+    
     while (start.x != end.x or start.y != end.y) {
         for (int y = 0; y < 2; y++) {
             for (int x = 0; x < 2; x++) {
@@ -63,12 +66,15 @@ void drawLine(SDL_Plotter &g, point start, point end, color c = color(0, 0, 0)) 
 
 // Function to draw the tree
 void drawTree(SDL_Plotter& g, font& iconFont, node* root, int level, int index, int baseX, int baseY, int spacing) {
+    // Base case, do nothing if root is not real
     if (root == nullptr) return;
 
+    //Gets position of current node to draw it
     point position = getNodePosition(level, index, baseX, baseY, spacing);
 
     // Draw current node (circle)
     if (root->data != -1) {
+        // Only draws colored nodes if not in a found state
         if (root->glowingFlag == false) {
             if (root->color == 'r') {
                 drawNode(g, to_string(root->data), 25, position, iconFont, red); // Circle radius of 25
@@ -81,14 +87,14 @@ void drawTree(SDL_Plotter& g, font& iconFont, node* root, int level, int index, 
             drawNode(g, to_string(root->data), 25, position, iconFont, yellow);
         }
 
-
-
         // Draw left child
         if (root->left != nullptr) {
             point leftPosition = getNodePosition(level + 1, index * 2 - 1, baseX, baseY, spacing);
             if ( root->left->data != -1) {
+                // Draw a line to the node stopping just before it touches the node
                 drawLine(g, {position.x - 16, position.y + 16}, leftPosition, black);
             }
+            // Recursively draw the tree with the child as the new root
             drawTree(g, iconFont, root->left, level + 1, index * 2 - 1, baseX, baseY, spacing);
         }
 
@@ -96,8 +102,10 @@ void drawTree(SDL_Plotter& g, font& iconFont, node* root, int level, int index, 
         if (root->right != nullptr) {
             point rightPosition = getNodePosition(level + 1, index * 2 + 1, baseX, baseY, spacing);
             if (root->right->data != -1) {
+                // Draw a line to the node stopping just before it touches the node
                 drawLine(g, {position.x + 16, position.y + 16}, rightPosition, black);
             }
+            // Recursively draw the tree with the child as the new root
             drawTree(g, iconFont, root->right, level + 1, index * 2 + 1, baseX, baseY, spacing);
         }
     }
