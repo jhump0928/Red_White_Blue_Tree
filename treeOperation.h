@@ -1,6 +1,9 @@
-//
-// Created by jhump on 11/13/2024.
-//
+// RBT Group Project
+// Group: Red White and Blue Tree
+// Members: Andrew Crotwell, Faith Ota, Ben Collett,
+//         Mac Johnson, Jonathan Humphries
+// Date Last Edited: 12/7/2024
+// Date Due: 12/8/2024
 
 //The following file handles code related to the treeOperation icons in
 //the top left corner of the SDL screen. It displays text and the icons
