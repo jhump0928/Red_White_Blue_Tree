@@ -1,9 +1,9 @@
-//
-//  font.h
-//  Group Project 1440
-//
-//  Created by Mac J on 4/23/24.
-//
+// RBT Group Project
+// Group: Red White and Blue Tree
+// Members: Andrew Crotwell, Faith Ota, Ben Collett,
+//         Mac Johnson, Jonathan Humphries
+// Date Last Edited: 12/7/2024
+// Date Due: 12/8/2024
 
 #ifndef font_h
 #define font_h
