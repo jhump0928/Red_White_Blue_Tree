@@ -309,6 +309,7 @@ public:
 
     // new function to clear glowing flags
     void stopAllGlowing() {
+        getLevelOrder();
         for (unsigned int i = 0; i < arr.size(); i++) {
             arr[i]->glowingFlag = false;
         }
