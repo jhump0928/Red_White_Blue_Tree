@@ -26,7 +26,6 @@ struct node{
     node(){
         data = 0;
         color = 'b';
-        isDoubleBlack = false;
         parent = nullptr;
         left = nullptr;
         right = nullptr;
@@ -277,18 +276,18 @@ public:
     //destructor
     ~RBT(){
         cout << "DEstructor Called" << endl;
-        clearTree(root);
+        clearTree();
     }
-    void clearTree(node* root) {
-        if(root->data != -1) {
-            clearTree(root->left);
-            clearTree(root->right);
-            //cout << root->data << " ";
-            delete root;
+
+
+    void clearTree() {
+        vector<node*> temp = getLevelOrder();
+        for(int i=0;i<temp.size();i++){
+            remove(temp[i]->data);
         }
-        size = 0;
-        root = nullptr;
     }
+
+
     void createLevelOrder() {
         arr.clear();
         createLevelOrder(root);
@@ -323,8 +322,8 @@ public:
             throw string("Error: Value Too Large");
         }
 
-        if(root == nullptr){ //If the tree is empty
-            
+        if(root==nullptr){ //If the tree is empty
+
             //Root points to a node with value val
             root = new node(val);
 
@@ -437,7 +436,7 @@ public:
 
         return result;
     }
-  void transplant(node* oldNode, node* newNode) {
+    void transplant(node* oldNode, node* newNode) {
         if(oldNode->parent == nullptr) {
             root = newNode;
         }
@@ -463,8 +462,10 @@ public:
         }
         return x->parent->left;
     }
-     void remove(int val) {
+    void remove(int val) {
         node* oldNode = find(root,val);
+        node* temp = oldNode;
+
         if(oldNode != nullptr) {
             if(size>1){
                 size--;
@@ -483,7 +484,7 @@ public:
                         if(ogCol == 'b') {
                             newNode->color = 'B';
                         }
-                        delete oldNode;
+                        //delete oldNode;
                     }
                     else {
                         father->left= newNode;
@@ -491,11 +492,11 @@ public:
                         if(ogCol == 'b') {
                             newNode->color = 'B';
                         }
-                        delete oldNode;
+                        //delete oldNode;
                     }
 
                 }
-                //RIGHT CHILD
+                    //RIGHT CHILD
                 else if(oldNode->left->data == -1 ) { //right child
                     newNode = oldNode->right;
                     transplant(oldNode,newNode);
@@ -504,7 +505,7 @@ public:
                         ogCol= 'r';
                     }
                 }
-                //LEFT CHILD
+                    //LEFT CHILD
                 else if(oldNode->right->data == -1) { //left child
                     ogCol= oldNode->color;
                     newNode = oldNode->left;
@@ -514,7 +515,7 @@ public:
                         ogCol= 'r';
                     }
                 }
-                //DOUBLE CHILDREN
+                    //DOUBLE CHILDREN
                 else { //case 4 2 children
                     father = maxMin(oldNode);
                     newNode = father->left;
@@ -544,13 +545,13 @@ public:
                 }
             }
             else {
-                delete root;
                 root = nullptr;
                 size--;
             }
         }
-        else
-            cout << "hi";
+        if(oldNode) {
+            delete oldNode;
+        }
     }
     void removeFix(node* x) {
         if(root== x) {
@@ -570,7 +571,7 @@ public:
                     sib->left->color = 'b';
                     x->color = 'b';
                 }
-                //case 2 Left Right
+                    //case 2 Left Right
                 else if(sib->right->color == 'r') {
                     sib->right->color = sib->color;
                     sib->color = 'r';
@@ -587,7 +588,7 @@ public:
                     sib->right->color = 'b';
                     x->color = 'b';
                 }
-                //case 4 RIGHT LEFT
+                    //case 4 RIGHT LEFT
                 else if(sib->left->color == 'r') {
                     sib->left->color = sib->color;
                     sib->color = 'r';
@@ -608,10 +609,10 @@ public:
                     x->parent->color = 'B';
                 x->color = 'b';
                 removeFix(x->parent);
-                }
-            //END CASE B ------------------------------
-            //-----------------------------------------------
-            //CASE C RED SIBLING
+            }
+                //END CASE B ------------------------------
+                //-----------------------------------------------
+                //CASE C RED SIBLING
             else if(sib->color == 'r' && x->color == 'B') {
                 sib->color = 'b';
                 sib->parent->color = 'r';
@@ -625,6 +626,7 @@ public:
             //END CASE RED SIBLING
         }
     }
+
 
     vector<int> frontEndFind(int val){
         vector<int> nodesTraversed;
@@ -651,6 +653,8 @@ public:
 
         return nodesTraversed;
     }
+
+
 
 };
 

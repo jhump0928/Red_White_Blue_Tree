@@ -9,7 +9,6 @@
 
 using namespace std;
 
-color lightBlue(173,216,230);
 color darkBlue(11,11,69);
 color red(166,44,43);
 color yellow(255,244,79);

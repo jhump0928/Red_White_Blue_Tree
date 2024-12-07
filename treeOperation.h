@@ -67,6 +67,7 @@ public:
             drawRectangle(g,point(20,60),350,20,color(255,255,255));
 
             iconFont.printText(g,"i  insert",insertOperationIconPoint.x,insertOperationIconPoint.y+10);
+            iconFont.printText(g,"press k to clear tree",insertOperationIconPoint.x,insertOperationIconPoint.y+45);
         }
         else if (operation == "delete"){
 
@@ -74,6 +75,7 @@ public:
             drawRectangle(g,point(20,60),350,20,color(255,255,255));
 
             iconFont.printText(g,"r  remove",deleteOperationIconPoint.x,deleteOperationIconPoint.y+10);
+            iconFont.printText(g,"press k to clear tree",insertOperationIconPoint.x,insertOperationIconPoint.y+45);
         }
         else if(operation == "find"){
 
@@ -81,23 +83,29 @@ public:
             drawRectangle(g,point(20,60),350,20,color(255,255,255));
 
             iconFont.printText(g,"f  find",findOperationIconPoint.x,findOperationIconPoint.y+10);
+            iconFont.printText(g,"press k to clear tree",insertOperationIconPoint.x,insertOperationIconPoint.y+45);
         }
         else if(operation == "insertRead"){
 
             drawRectangle(g,insertOperationIconPoint);
+            drawRectangle(g,point(20,60),350,20,color(255,255,255));
 
             iconFont.printText(g," ",insertOperationIconPoint.x,insertOperationIconPoint.y+10);
             iconFont.printText(g,"press c to confirm, x to backspace",insertOperationIconPoint.x,insertOperationIconPoint.y+45);
 
         }
         else if(operation=="deleteRead"){
+
             drawRectangle(g,deleteOperationIconPoint);
+            drawRectangle(g,point(20,60),350,20,color(255,255,255));
 
             iconFont.printText(g," ",deleteOperationIconPoint.x,deleteOperationIconPoint.y+10);
             iconFont.printText(g,"press c to confirm, x to backspace",insertOperationIconPoint.x,insertOperationIconPoint.y+45);
         }
         else if(operation=="findRead"){
+
             drawRectangle(g,findOperationIconPoint);
+            drawRectangle(g,point(20,60),350,20,color(255,255,255));
 
             iconFont.printText(g," ",findOperationIconPoint.x,findOperationIconPoint.y+10);
             iconFont.printText(g,"press c to confirm, x to backspace",insertOperationIconPoint.x,insertOperationIconPoint.y+45);
