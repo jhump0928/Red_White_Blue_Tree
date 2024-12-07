@@ -14,8 +14,6 @@ using namespace std;
 struct node{
     int data;
     char color;
-
-    bool isDoubleBlack;
     node* parent;
     node* left;
     node* right;
@@ -43,7 +41,6 @@ struct node{
         this->parent = parent;
         this->left = left;
         this->right = right;
-        this->isDoubleBlack = isDoubleBlack;
 
     }
 
